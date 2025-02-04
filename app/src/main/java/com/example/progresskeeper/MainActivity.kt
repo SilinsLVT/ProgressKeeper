@@ -16,6 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
+import com.example.progresskeeper.navigation.Screen
+import com.example.progresskeeper.screens.ExercisesScreen
+import com.example.progresskeeper.screens.WorkoutCategoriesScreen
 import com.example.progresskeeper.ui.theme.ProgressKeeperTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,8 +32,38 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ProgressKeeperTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    StartScreen(modifier = Modifier.padding(innerPadding))
+                val navController = rememberNavController()
+                
+                Scaffold { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.Start.route,
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable(Screen.Start.route) {
+                            StartScreen(
+                                onStartWorkoutClick = {
+                                    navController.navigate(Screen.WorkoutCategories.route)
+                                }
+                            )
+                        }
+                        
+                        composable(Screen.WorkoutCategories.route) {
+                            WorkoutCategoriesScreen { category ->
+                                navController.navigate(Screen.Exercises.createRoute(category))
+                            }
+                        }
+                        
+                        composable(
+                            route = Screen.Exercises.route,
+                            arguments = listOf(
+                                navArgument("category") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val category = backStackEntry.arguments?.getString("category") ?: return@composable
+                            ExercisesScreen(category = category)
+                        }
+                    }
                 }
             }
         }
@@ -33,7 +71,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun StartScreen(modifier: Modifier = Modifier) {
+fun StartScreen(
+    modifier: Modifier = Modifier,
+    onStartWorkoutClick: () -> Unit
+) {
     Row(
         modifier = modifier
             .fillMaxSize()
@@ -49,7 +90,7 @@ fun StartScreen(modifier: Modifier = Modifier) {
         }
         
         Button(
-            onClick = { /* TODO: Handle start workout click */ },
+            onClick = onStartWorkoutClick,
             modifier = Modifier.weight(1f, fill = false)
         ) {
             Text(text = "Start Workout")
