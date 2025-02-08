@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ExercisesScreen(category: String) {
+fun ExercisesScreen(
+    category: String,
+    onExerciseClick: (String) -> Unit
+) {
     val exercises = when (category) {
         "Traps" -> listOf(
             "Barbell Shrugs",
@@ -87,12 +91,12 @@ fun ExercisesScreen(category: String) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(exercises) { exercise ->
-            Text(
-                text = exercise,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            )
+            Button(
+                onClick = { onExerciseClick(exercise) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = exercise)
+            }
         }
     }
 } 

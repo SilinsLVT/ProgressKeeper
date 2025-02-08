@@ -24,6 +24,7 @@ import androidx.navigation.NavType
 import com.example.progresskeeper.navigation.Screen
 import com.example.progresskeeper.screens.ExercisesScreen
 import com.example.progresskeeper.screens.WorkoutCategoriesScreen
+import com.example.progresskeeper.screens.ExerciseDetailsScreen
 import com.example.progresskeeper.ui.theme.ProgressKeeperTheme
 
 class MainActivity : ComponentActivity() {
@@ -61,7 +62,27 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { backStackEntry ->
                             val category = backStackEntry.arguments?.getString("category") ?: return@composable
-                            ExercisesScreen(category = category)
+                            ExercisesScreen(
+                                category = category,
+                                onExerciseClick = { exercise ->
+                                    navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
+                                }
+                            )
+                        }
+
+                        composable(
+                            route = Screen.ExerciseDetails.route,
+                            arguments = listOf(
+                                navArgument("exercise") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val exercise = backStackEntry.arguments?.getString("exercise") ?: return@composable
+                            ExerciseDetailsScreen(
+                                exercise = exercise,
+                                onSaveClick = {
+                                    navController.popBackStack()
+                                }
+                            )
                         }
                     }
                 }
