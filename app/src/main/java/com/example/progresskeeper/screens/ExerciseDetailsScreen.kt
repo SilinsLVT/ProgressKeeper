@@ -12,8 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +50,8 @@ fun ExerciseDetailsScreen(
     var weight by remember { mutableStateOf("") }
     var reps by remember { mutableStateOf("") }
     val sets = remember { mutableStateListOf<ExerciseSet>() }
+    var isEditMode by remember { mutableStateOf(false) }
+    var editingSetIndex by remember { mutableStateOf(-1) }
 
     Column(
         modifier = Modifier
@@ -82,17 +89,41 @@ fun ExerciseDetailsScreen(
         Button(
             onClick = {
                 if (weight.isNotEmpty() && reps.isNotEmpty()) {
-                    sets.add(ExerciseSet(sets.size + 1, weight, reps))
+                    if (isEditMode && editingSetIndex >= 0 && editingSetIndex < sets.size) {
+                        val currentSet = sets[editingSetIndex]
+                        sets[editingSetIndex] = ExerciseSet(currentSet.setNumber, weight, reps)
+                        isEditMode = false
+                        editingSetIndex = -1
+                    } else {
+                        sets.add(ExerciseSet(sets.size + 1, weight, reps))
+                    }
                     weight = ""
                     reps = ""
                 }
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4CAF50)
+                containerColor = if (isEditMode) Color(0xFFFF9800) else Color(0xFF4CAF50)
             )
         ) {
-            Text("Save")
+            Text(if (isEditMode) "Update" else "Save")
+        }
+
+        if (isEditMode) {
+            Button(
+                onClick = {
+                    isEditMode = false
+                    editingSetIndex = -1
+                    weight = ""
+                    reps = ""
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF9E9E9E)
+                )
+            ) {
+                Text("Cancel")
+            }
         }
 
         LazyColumn(
@@ -119,11 +150,46 @@ fun ExerciseDetailsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Set ${set.setNumber}")
                         Text("${set.weight}kg")
                         Text("${set.reps} reps")
+                        
+                        Row {
+                            IconButton(
+                                onClick = {
+                                    isEditMode = true
+                                    editingSetIndex = sets.indexOf(set)
+                                    weight = set.weight
+                                    reps = set.reps
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "Edit set",
+                                    tint = Color(0xFF2196F3)
+                                )
+                            }
+                            
+                            IconButton(
+                                onClick = {
+                                    sets.remove(set)
+                                    
+                                    // Renumber sets
+                                    for (i in 0 until sets.size) {
+                                        sets[i] = ExerciseSet(i + 1, sets[i].weight, sets[i].reps)
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete set",
+                                    tint = Color(0xFFF44336)
+                                )
+                            }
+                        }
                     }
                 }
             }
