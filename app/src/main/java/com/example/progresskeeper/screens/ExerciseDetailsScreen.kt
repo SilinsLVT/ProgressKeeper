@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,8 +34,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.progresskeeper.data.DataStorage
 
 data class ExerciseSet(
     val setNumber: Int,
@@ -47,11 +50,26 @@ fun ExerciseDetailsScreen(
     exercise: String,
     onSaveClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val dataStorage = remember { DataStorage(context) }
     var weight by remember { mutableStateOf("") }
     var reps by remember { mutableStateOf("") }
     val sets = remember { mutableStateListOf<ExerciseSet>() }
     var isEditMode by remember { mutableStateOf(false) }
     var editingSetIndex by remember { mutableStateOf(-1) }
+    
+    // Load saved exercise sets on initial composition
+    DisposableEffect(exercise) {
+        val savedSets = dataStorage.loadExerciseSets(exercise)
+        sets.clear()
+        sets.addAll(savedSets)
+        
+        onDispose { }
+    }
+    
+    fun saveExerciseData() {
+        dataStorage.saveExerciseSets(exercise, sets)
+    }
 
     Column(
         modifier = Modifier
@@ -99,6 +117,7 @@ fun ExerciseDetailsScreen(
                     }
                     weight = ""
                     reps = ""
+                    saveExerciseData()
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -181,6 +200,8 @@ fun ExerciseDetailsScreen(
                                     for (i in 0 until sets.size) {
                                         sets[i] = ExerciseSet(i + 1, sets[i].weight, sets[i].reps)
                                     }
+                                    
+                                    saveExerciseData()
                                 }
                             ) {
                                 Icon(
