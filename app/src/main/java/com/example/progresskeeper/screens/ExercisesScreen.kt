@@ -35,6 +35,7 @@ fun ExercisesScreen(
     onExerciseClick: (String) -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    var showAddExerciseDialog by remember { mutableStateOf(false) }
     
     val exercises = when (category) {
         "Traps" -> listOf(
@@ -132,7 +133,7 @@ fun ExercisesScreen(
                 singleLine = true
             )
             IconButton(
-                onClick = { /* TODO: Handle add exercise click */ },
+                onClick = { showAddExerciseDialog = true },
                 modifier = Modifier.padding(start = 8.dp)
             ) {
                 Icon(
@@ -169,5 +170,15 @@ fun ExercisesScreen(
                 }
             }
         }
+    }
+
+    if (showAddExerciseDialog) {
+        AddExerciseScreen(
+            onDismiss = { showAddExerciseDialog = false },
+            onSave = { exerciseName ->
+                // TODO: Add validation and saving logic
+                showAddExerciseDialog = false
+            }
+        )
     }
 }
