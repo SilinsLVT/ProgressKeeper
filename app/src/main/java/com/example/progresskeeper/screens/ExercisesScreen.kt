@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,72 +38,74 @@ fun ExercisesScreen(
     var searchQuery by remember { mutableStateOf("") }
     var showAddExerciseDialog by remember { mutableStateOf(false) }
     
-    val exercises = when (category) {
-        "Traps" -> listOf(
-            "Barbell Shrugs",
-            "Dumbbell Shrugs",
-            "Behind-the-Back Smith Machine Shrugs",
-            "Rack Pulls",
-            "Face Pulls"
-        )
-        "Shoulders" -> listOf(
-            "Military Press",
-            "Lateral Raises",
-            "Front Raises",
-            "Reverse Flyes",
-            "Arnold Press"
-        )
-        "Chest" -> listOf(
-            "Bench Press",
-            "Incline Dumbbell Press",
-            "Dips",
-            "Cable Flyes",
-            "Push-Ups"
-        )
-        "Back" -> listOf(
-            "Pull-Ups",
-            "Barbell Rows",
-            "Lat Pulldowns",
-            "Deadlifts",
-            "T-Bar Rows"
-        )
-        "Triceps" -> listOf(
-            "Tricep Pushdowns",
-            "Skull Crushers",
-            "Close-Grip Bench Press",
-            "Overhead Tricep Extensions",
-            "Diamond Push-Ups"
-        )
-        "Biceps" -> listOf(
-            "Barbell Curls",
-            "Hammer Curls",
-            "Preacher Curls",
-            "Incline Dumbbell Curls",
-            "Concentration Curls"
-        )
-        "Forearms" -> listOf(
-            "Wrist Curls",
-            "Reverse Wrist Curls",
-            "Farmers Walks",
-            "Plate Pinches",
-            "Behind-the-Back Wrist Curls"
-        )
-        "Legs" -> listOf(
-            "Squats",
-            "Romanian Deadlifts",
-            "Leg Press",
-            "Lunges",
-            "Leg Extensions"
-        )
-        "Calves" -> listOf(
-            "Standing Calf Raises",
-            "Seated Calf Raises",
-            "Donkey Calf Raises",
-            "Jump Rope",
-            "Single-Leg Calf Raises"
-        )
-        else -> emptyList()
-    }
+    val exercises = remember { mutableStateListOf<String>().apply {
+        addAll(when (category) {
+            "Traps" -> listOf(
+                "Barbell Shrugs",
+                "Dumbbell Shrugs",
+                "Behind-the-Back Smith Machine Shrugs",
+                "Rack Pulls",
+                "Face Pulls"
+            )
+            "Shoulders" -> listOf(
+                "Military Press",
+                "Lateral Raises",
+                "Front Raises",
+                "Reverse Flyes",
+                "Arnold Press"
+            )
+            "Chest" -> listOf(
+                "Bench Press",
+                "Incline Dumbbell Press",
+                "Dips",
+                "Cable Flyes",
+                "Push-Ups"
+            )
+            "Back" -> listOf(
+                "Pull-Ups",
+                "Barbell Rows",
+                "Lat Pulldowns",
+                "Deadlifts",
+                "T-Bar Rows"
+            )
+            "Triceps" -> listOf(
+                "Tricep Pushdowns",
+                "Skull Crushers",
+                "Close-Grip Bench Press",
+                "Overhead Tricep Extensions",
+                "Diamond Push-Ups"
+            )
+            "Biceps" -> listOf(
+                "Barbell Curls",
+                "Hammer Curls",
+                "Preacher Curls",
+                "Incline Dumbbell Curls",
+                "Concentration Curls"
+            )
+            "Forearms" -> listOf(
+                "Wrist Curls",
+                "Reverse Wrist Curls",
+                "Farmers Walks",
+                "Plate Pinches",
+                "Behind-the-Back Wrist Curls"
+            )
+            "Legs" -> listOf(
+                "Squats",
+                "Romanian Deadlifts",
+                "Leg Press",
+                "Lunges",
+                "Leg Extensions"
+            )
+            "Calves" -> listOf(
+                "Standing Calf Raises",
+                "Seated Calf Raises",
+                "Donkey Calf Raises",
+                "Jump Rope",
+                "Single-Leg Calf Raises"
+            )
+            else -> emptyList()
+        })
+    }}
 
     val filteredExercises = exercises.filter { exercise ->
         exercise.lowercase().contains(searchQuery.lowercase())
@@ -176,7 +179,7 @@ fun ExercisesScreen(
         AddExerciseScreen(
             onDismiss = { showAddExerciseDialog = false },
             onSave = { exerciseName ->
-                // TODO: Add validation and saving logic
+                exercises.add(exerciseName)
                 showAddExerciseDialog = false
             }
         )
