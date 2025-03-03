@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,20 +31,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.progresskeeper.data.DataStorage
 
 @Composable
 fun ExercisesScreen(
     category: String,
     onExerciseClick: (String) -> Unit
 ) {
+    val context = LocalContext.current
+    val dataStorage = remember { DataStorage(context) }
     var searchQuery by remember { mutableStateOf("") }
     var showAddExerciseDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     
-    val exercises = remember { mutableStateListOf<String>().apply {
-        addAll(when (category) {
+    val exercises = remember { mutableStateListOf<String>() }
+    
+    // Load saved exercises when the screen is first shown
+    DisposableEffect(category) {
+        val defaultExercises = when (category) {
             "Traps" -> listOf(
                 "Barbell Shrugs",
                 "Dumbbell Shrugs",
@@ -108,8 +116,14 @@ fun ExercisesScreen(
                 "Single-Leg Calf Raises"
             )
             else -> emptyList()
-        })
-    }}
+        }
+        
+        val savedExercises = dataStorage.loadExerciseNames(category)
+        exercises.clear()
+        exercises.addAll(savedExercises.ifEmpty { defaultExercises })
+        
+        onDispose { }
+    }
 
     val filteredExercises = exercises.filter { exercise ->
         exercise.lowercase().contains(searchQuery.lowercase())
@@ -196,6 +210,7 @@ fun ExercisesScreen(
                 }
                 
                 exercises.add(exerciseName)
+                dataStorage.saveExerciseNames(category, exercises)
                 showAddExerciseDialog = false
             }
         )

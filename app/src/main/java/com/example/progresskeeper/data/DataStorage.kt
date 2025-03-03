@@ -22,12 +22,12 @@ class DataStorage(context: Context) {
         }
         
         val editor = sharedPreferences.edit()
-        editor.putString(exercise, jsonArray.toString())
+        editor.putString("sets_$exercise", jsonArray.toString())
         editor.apply()
     }
 
     fun loadExerciseSets(exercise: String): List<ExerciseSet> {
-        val jsonString = sharedPreferences.getString(exercise, null) ?: return emptyList()
+        val jsonString = sharedPreferences.getString("sets_$exercise", null) ?: return emptyList()
         val jsonArray = JSONArray(jsonString)
         val sets = mutableListOf<ExerciseSet>()
         
@@ -40,5 +40,28 @@ class DataStorage(context: Context) {
         }
         
         return sets
+    }
+
+    fun saveExerciseNames(category: String, exercises: List<String>) {
+        val jsonArray = JSONArray()
+        exercises.forEach { exercise ->
+            jsonArray.put(exercise)
+        }
+        
+        val editor = sharedPreferences.edit()
+        editor.putString("exercises_$category", jsonArray.toString())
+        editor.apply()
+    }
+
+    fun loadExerciseNames(category: String): List<String> {
+        val jsonString = sharedPreferences.getString("exercises_$category", null) ?: return emptyList()
+        val jsonArray = JSONArray(jsonString)
+        val exercises = mutableListOf<String>()
+        
+        for (i in 0 until jsonArray.length()) {
+            exercises.add(jsonArray.getString(i))
+        }
+        
+        return exercises
     }
 } 
