@@ -179,8 +179,10 @@ fun ExercisesScreen(
         AddExerciseScreen(
             onDismiss = { showAddExerciseDialog = false },
             onSave = { exerciseName ->
-                exercises.add(exerciseName)
-                showAddExerciseDialog = false
+                if (!exercises.any { it.equals(exerciseName, ignoreCase = true) }) {
+                    exercises.add(exerciseName)
+                    showAddExerciseDialog = false
+                }
             }
         )
     }
