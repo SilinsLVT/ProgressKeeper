@@ -13,10 +13,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -37,6 +39,8 @@ fun ExercisesScreen(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showAddExerciseDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     
     val exercises = remember { mutableStateListOf<String>().apply {
         addAll(when (category) {
@@ -179,9 +183,34 @@ fun ExercisesScreen(
         AddExerciseScreen(
             onDismiss = { showAddExerciseDialog = false },
             onSave = { exerciseName ->
-                if (!exercises.any { it.equals(exerciseName, ignoreCase = true) }) {
-                    exercises.add(exerciseName)
-                    showAddExerciseDialog = false
+                if (exerciseName.isBlank()) {
+                    errorMessage = "Exercise name cannot be empty"
+                    showErrorDialog = true
+                    return@AddExerciseScreen
+                }
+                
+                if (exercises.any { it.equals(exerciseName, ignoreCase = true) }) {
+                    errorMessage = "This exercise already exists"
+                    showErrorDialog = true
+                    return@AddExerciseScreen
+                }
+                
+                exercises.add(exerciseName)
+                showAddExerciseDialog = false
+            }
+        )
+    }
+
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = { Text("Error") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(
+                    onClick = { showErrorDialog = false }
+                ) {
+                    Text("OK")
                 }
             }
         )
