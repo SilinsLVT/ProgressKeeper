@@ -5,11 +5,15 @@ import android.content.SharedPreferences
 import com.example.progresskeeper.screens.ExerciseSet
 import org.json.JSONArray
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DataStorage(context: Context) {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
         "workout_data", Context.MODE_PRIVATE
     )
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     fun saveExerciseSets(exercise: String, sets: List<ExerciseSet>) {
         val jsonArray = JSONArray()
@@ -63,5 +67,66 @@ class DataStorage(context: Context) {
         }
         
         return exercises
+    }
+
+    fun saveWorkout(workout: Workout) {
+        val jsonObject = JSONObject()
+        jsonObject.put("date", dateFormat.format(workout.date))
+        
+        val exercisesArray = JSONArray()
+        workout.exercises.forEach { exercise ->
+            val exerciseObject = JSONObject()
+            exerciseObject.put("name", exercise.name)
+            
+            val setsArray = JSONArray()
+            exercise.sets.forEach { set ->
+                val setObject = JSONObject()
+                setObject.put("setNumber", set.setNumber)
+                setObject.put("weight", set.weight)
+                setObject.put("reps", set.reps)
+                setsArray.put(setObject)
+            }
+            exerciseObject.put("sets", setsArray)
+            exercisesArray.put(exerciseObject)
+        }
+        jsonObject.put("exercises", exercisesArray)
+        
+        val editor = sharedPreferences.edit()
+        editor.putString("workout_${dateFormat.format(workout.date)}", jsonObject.toString())
+        editor.apply()
+    }
+
+    fun loadWorkout(date: Date): Workout? {
+        val jsonString = sharedPreferences.getString("workout_${dateFormat.format(date)}", null) 
+            ?: return null
+            
+        val jsonObject = JSONObject(jsonString)
+        val exercisesArray = jsonObject.getJSONArray("exercises")
+        val exercises = mutableListOf<WorkoutExercise>()
+        
+        for (i in 0 until exercisesArray.length()) {
+            val exerciseObject = exercisesArray.getJSONObject(i)
+            val name = exerciseObject.getString("name")
+            
+            val setsArray = exerciseObject.getJSONArray("sets")
+            val sets = mutableListOf<ExerciseSet>()
+            
+            for (j in 0 until setsArray.length()) {
+                val setObject = setsArray.getJSONObject(j)
+                sets.add(ExerciseSet(
+                    setNumber = setObject.getInt("setNumber"),
+                    weight = setObject.getString("weight"),
+                    reps = setObject.getString("reps")
+                ))
+            }
+            
+            exercises.add(WorkoutExercise(name, sets))
+        }
+        
+        return Workout(date, exercises)
+    }
+
+    fun hasWorkoutForDate(date: Date): Boolean {
+        return sharedPreferences.contains("workout_${dateFormat.format(date)}")
     }
 } 
