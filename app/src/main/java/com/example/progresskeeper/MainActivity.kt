@@ -91,6 +91,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
 fun StartScreen(
     modifier: Modifier = Modifier,
