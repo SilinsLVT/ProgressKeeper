@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +57,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onCopyWorkoutClick = {
                                     // TODO: Implement copy workout functionality
+                                },
+                                onExerciseClick = { exercise ->
+                                    navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
                                 }
                             )
                         }
@@ -112,19 +116,22 @@ class MainActivity : ComponentActivity() {
 fun StartScreen(
     modifier: Modifier = Modifier,
     onStartWorkoutClick: () -> Unit,
-    onCopyWorkoutClick: () -> Unit
+    onCopyWorkoutClick: () -> Unit,
+    onExerciseClick: (String) -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
     val hasWorkoutToday = remember { mutableStateOf(false) }
     
-    // Check if there's a workout for today
-    hasWorkoutToday.value = dataStorage.hasWorkoutForDate(Date())
+    // Load workout for current date
+    LaunchedEffect(Unit) {
+        val today = Date()
+        val workout = dataStorage.loadWorkout(today)
+        hasWorkoutToday.value = workout != null
+    }
     
     if (hasWorkoutToday.value) {
-        WorkoutScreen { exercise ->
-            // TODO: Navigate to exercise details
-        }
+        WorkoutScreen(onExerciseClick = onExerciseClick)
     } else {
         Row(
             modifier = modifier

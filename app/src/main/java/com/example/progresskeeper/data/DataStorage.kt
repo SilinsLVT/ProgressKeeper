@@ -2,7 +2,6 @@ package com.example.progresskeeper.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.progresskeeper.screens.ExerciseSet
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat

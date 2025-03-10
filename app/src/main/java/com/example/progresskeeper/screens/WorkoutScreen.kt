@@ -13,11 +13,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +32,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import android.util.Log
 import com.example.progresskeeper.data.DataStorage
 import com.example.progresskeeper.data.Workout
 import java.util.Date
@@ -44,7 +51,25 @@ fun WorkoutScreen(
     var exerciseToDelete by remember { mutableStateOf<String?>(null) }
     
     // Load workout for current date
-    workout = dataStorage.loadWorkout(Date())
+    LaunchedEffect(Unit) {
+        val today = Date()
+        val loadedWorkout = dataStorage.loadWorkout(today)
+        Log.d("WorkoutScreen", "Loaded workout: $loadedWorkout")
+        if (loadedWorkout != null) {
+            Log.d("WorkoutScreen", "Exercises: ${loadedWorkout.exercises}")
+            loadedWorkout.exercises.forEach { exercise ->
+                Log.d("WorkoutScreen", "Exercise: ${exercise.name}, Sets: ${exercise.sets}")
+            }
+        }
+        workout = loadedWorkout
+    }
+    
+    // Refresh workout when screen becomes visible again
+    LaunchedEffect(Unit) {
+        val today = Date()
+        val loadedWorkout = dataStorage.loadWorkout(today)
+        workout = loadedWorkout
+    }
     
     if (workout == null) {
         Text(
@@ -65,60 +90,70 @@ fun WorkoutScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(workout!!.exercises) { exercise ->
-                Column(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onExerciseClick(exercise.name) }
+                        .clickable { onExerciseClick(exercise.name) },
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(16.dp)
                     ) {
-                        Text(
-                            text = exercise.name,
-                            modifier = Modifier.weight(1f)
-                        )
-                        IconButton(
-                            onClick = {
-                                exerciseToDelete = exercise.name
-                                showDeleteDialog = true
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete exercise",
-                                tint = Color(0xFFF44336)
-                            )
-                        }
-                    }
-                    
-                    exercise.sets.forEach { set ->
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, bottom = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Set ${set.setNumber}")
-                            Text("${set.weight}kg x ${set.reps} reps")
-                        }
-                    }
-                    
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .drawBehind {
-                                drawLine(
-                                    color = Color.LightGray.copy(alpha = 0.5f),
-                                    start = Offset(0f, size.height),
-                                    end = Offset(size.width, size.height),
-                                    strokeWidth = 1f
+                            Text(
+                                text = exercise.name,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = {
+                                    exerciseToDelete = exercise.name
+                                    showDeleteDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete exercise",
+                                    tint = Color(0xFFF44336)
                                 )
                             }
-                    )
+                        }
+                        
+                        if (exercise.sets.isNotEmpty()) {
+                            Text(
+                                text = "Sets:",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                            )
+                            
+                            exercise.sets.forEach { set ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp, bottom = 4.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "Set ${set.setNumber}",
+                                        fontSize = 14.sp
+                                    )
+                                    Text(
+                                        text = "${set.weight}kg x ${set.reps} reps",
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

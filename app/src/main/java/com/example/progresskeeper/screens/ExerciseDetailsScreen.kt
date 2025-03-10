@@ -38,12 +38,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.progresskeeper.data.DataStorage
-
-data class ExerciseSet(
-    val setNumber: Int,
-    val weight: String,
-    val reps: String
-)
+import com.example.progresskeeper.data.ExerciseSet
+import com.example.progresskeeper.data.Workout
+import com.example.progresskeeper.data.WorkoutExercise
+import java.util.Date
 
 @Composable
 fun ExerciseDetailsScreen(
@@ -68,7 +66,23 @@ fun ExerciseDetailsScreen(
     }
     
     fun saveExerciseData() {
+        // Save sets to SharedPreferences
         dataStorage.saveExerciseSets(exercise, sets)
+        
+        // Update workout with the new sets
+        val today = Date()
+        val currentWorkout = dataStorage.loadWorkout(today) ?: Workout(today, emptyList())
+        
+        val updatedExercises = currentWorkout.exercises.map { workoutExercise ->
+            if (workoutExercise.name == exercise) {
+                WorkoutExercise(exercise, sets)
+            } else {
+                workoutExercise
+            }
+        }
+        
+        val updatedWorkout = Workout(today, updatedExercises)
+        dataStorage.saveWorkout(updatedWorkout)
     }
 
     Column(
