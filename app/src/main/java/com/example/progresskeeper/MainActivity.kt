@@ -13,19 +13,27 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
+import com.example.progresskeeper.data.DataStorage
 import com.example.progresskeeper.navigation.Screen
 import com.example.progresskeeper.screens.ExercisesScreen
 import com.example.progresskeeper.screens.WorkoutCategoriesScreen
 import com.example.progresskeeper.screens.ExerciseDetailsScreen
+import com.example.progresskeeper.screens.WorkoutScreen
 import com.example.progresskeeper.ui.theme.ProgressKeeperTheme
+import java.util.Date
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +53,17 @@ class MainActivity : ComponentActivity() {
                             StartScreen(
                                 onStartWorkoutClick = {
                                     navController.navigate(Screen.WorkoutCategories.route)
+                                },
+                                onCopyWorkoutClick = {
+                                    // TODO: Implement copy workout functionality
                                 }
                             )
+                        }
+                        
+                        composable(Screen.Workout.route) {
+                            WorkoutScreen { exercise ->
+                                navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
+                            }
                         }
                         
                         composable(Screen.WorkoutCategories.route) {
@@ -80,7 +97,7 @@ class MainActivity : ComponentActivity() {
                             ExerciseDetailsScreen(
                                 exercise = exercise,
                                 onSaveClick = {
-                                    navController.popBackStack()
+                                    navController.navigate(Screen.Workout.route)
                                 }
                             )
                         }
@@ -91,31 +108,44 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun StartScreen(
     modifier: Modifier = Modifier,
-    onStartWorkoutClick: () -> Unit
+    onStartWorkoutClick: () -> Unit,
+    onCopyWorkoutClick: () -> Unit
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Button(
-            onClick = { /* TODO: Handle copy workout click */ },
-            modifier = Modifier.weight(1f, fill = false)
-        ) {
-            Text(text = "Copy Workout")
+    val context = LocalContext.current
+    val dataStorage = remember { DataStorage(context) }
+    val hasWorkoutToday = remember { mutableStateOf(false) }
+    
+    // Check if there's a workout for today
+    hasWorkoutToday.value = dataStorage.hasWorkoutForDate(Date())
+    
+    if (hasWorkoutToday.value) {
+        WorkoutScreen { exercise ->
+            // TODO: Navigate to exercise details
         }
-        
-        Button(
-            onClick = onStartWorkoutClick,
-            modifier = Modifier.weight(1f, fill = false)
+    } else {
+        Row(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Start Workout")
+            Button(
+                onClick = onCopyWorkoutClick,
+                modifier = Modifier.weight(1f, fill = false)
+            ) {
+                Text(text = "Copy Workout")
+            }
+            
+            Button(
+                onClick = onStartWorkoutClick,
+                modifier = Modifier.weight(1f, fill = false)
+            ) {
+                Text(text = "Start Workout")
+            }
         }
     }
 }
