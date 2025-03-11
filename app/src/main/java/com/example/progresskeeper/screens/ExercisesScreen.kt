@@ -34,6 +34,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.progresskeeper.data.DataStorage
+import com.example.progresskeeper.data.Workout
+import com.example.progresskeeper.data.WorkoutExercise
+import java.util.Date
 
 @Composable
 fun ExercisesScreen(
@@ -180,7 +183,20 @@ fun ExercisesScreen(
                                 strokeWidth = 1f
                             )
                         }
-                        .clickable { onExerciseClick(exercise) }
+                        .clickable { 
+                            // Add exercise to today's workout
+                            val today = Date()
+                            val currentWorkout = dataStorage.loadWorkout(today) ?: Workout(today, emptyList())
+                            
+                            // Check if exercise already exists in workout
+                            if (!currentWorkout.exercises.any { it.name == exercise }) {
+                                val updatedExercises = currentWorkout.exercises + WorkoutExercise(exercise, emptyList())
+                                val updatedWorkout = Workout(today, updatedExercises)
+                                dataStorage.saveWorkout(updatedWorkout)
+                            }
+                            
+                            onExerciseClick(exercise)
+                        }
                         .padding(vertical = 16.dp, horizontal = 4.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
