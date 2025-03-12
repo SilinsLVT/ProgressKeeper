@@ -42,6 +42,7 @@ import java.util.Date
 
 @Composable
 fun WorkoutScreen(
+    modifier: Modifier = Modifier,
     onExerciseClick: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -82,7 +83,7 @@ fun WorkoutScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
