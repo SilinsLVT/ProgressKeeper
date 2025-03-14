@@ -202,6 +202,8 @@ fun StartScreen(
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
     val hasWorkoutToday = remember { mutableStateOf(false) }
+    var showCalendar by remember { mutableStateOf(false) }
+    var selectedWorkout by remember { mutableStateOf<Workout?>(null) }
     
     // Load workout for current date
     LaunchedEffect(Unit) {
@@ -214,7 +216,8 @@ fun StartScreen(
         modifier = modifier.fillMaxSize()
     ) {
         AppHeader(
-            onAddClick = onAddExerciseClick
+            onAddClick = onAddExerciseClick,
+            onCalendarClick = { showCalendar = true }
         )
         
         if (hasWorkoutToday.value) {
@@ -232,7 +235,7 @@ fun StartScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = onCopyWorkoutClick,
+                    onClick = { showCalendar = true },
                     modifier = Modifier.weight(1f, fill = false)
                 ) {
                     Text(text = "Copy Workout")
@@ -246,5 +249,34 @@ fun StartScreen(
                 }
             }
         }
+    }
+    
+    if (showCalendar) {
+        CalendarScreen(
+            onDaySelected = { date ->
+                val workout = dataStorage.loadWorkout(date)
+                if (workout != null) {
+                    selectedWorkout = workout
+                }
+            }
+        )
+    }
+    
+    if (selectedWorkout != null) {
+        WorkoutPreviewDialog(
+            workout = selectedWorkout!!,
+            onCopy = {
+                val today = Date()
+                val copiedWorkout = Workout(today, selectedWorkout!!.exercises)
+                dataStorage.saveWorkout(copiedWorkout)
+                hasWorkoutToday.value = true
+                selectedWorkout = null
+                showCalendar = false
+            },
+            onDismiss = {
+                selectedWorkout = null
+                showCalendar = false
+            }
+        )
     }
 }

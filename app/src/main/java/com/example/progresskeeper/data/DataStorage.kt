@@ -128,4 +128,20 @@ class DataStorage(context: Context) {
     fun hasWorkoutForDate(date: Date): Boolean {
         return sharedPreferences.contains("workout_${dateFormat.format(date)}")
     }
+
+    fun loadAllWorkouts(): List<Workout> {
+        val workouts = mutableListOf<Workout>()
+        val allEntries = sharedPreferences.all
+        
+        allEntries.forEach { (key, _) ->
+            if (key.startsWith("workout_")) {
+                val workout = loadWorkout(key.substring(8).toLong())
+                if (workout != null) {
+                    workouts.add(workout)
+                }
+            }
+        }
+        
+        return workouts.sortedByDescending { it.date.time }
+    }
 } 
