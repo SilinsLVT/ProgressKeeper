@@ -135,9 +135,13 @@ class DataStorage(context: Context) {
         
         allEntries.forEach { (key, _) ->
             if (key.startsWith("workout_")) {
-                val workout = loadWorkout(key.substring(8).toLong())
-                if (workout != null) {
-                    workouts.add(workout)
+                val dateStr = key.substring(8)
+                val date = dateFormat.parse(dateStr)
+                if (date != null) {
+                    val workout = loadWorkout(date)
+                    if (workout != null) {
+                        workouts.add(workout)
+                    }
                 }
             }
         }

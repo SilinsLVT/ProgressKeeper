@@ -40,11 +40,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import com.example.progresskeeper.data.DataStorage
+import com.example.progresskeeper.data.Workout
 import com.example.progresskeeper.navigation.Screen
 import com.example.progresskeeper.screens.ExercisesScreen
 import com.example.progresskeeper.screens.WorkoutCategoriesScreen
 import com.example.progresskeeper.screens.ExerciseDetailsScreen
 import com.example.progresskeeper.screens.WorkoutScreen
+import com.example.progresskeeper.screens.CalendarScreen
+import com.example.progresskeeper.screens.WorkoutPreviewDialog
 import com.example.progresskeeper.ui.theme.ProgressKeeperTheme
 import java.util.Date
 
@@ -55,6 +58,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProgressKeeperTheme {
                 val navController = rememberNavController()
+                var selectedWorkout by remember { mutableStateOf<Workout?>(null) }
+                val context = LocalContext.current
+                val dataStorage = remember { DataStorage(context) }
                 
                 Scaffold { innerPadding ->
                     NavHost(
@@ -68,13 +74,16 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(Screen.WorkoutCategories.route)
                                 },
                                 onCopyWorkoutClick = {
-                                    // TODO: Implement copy workout functionality
+                                    navController.navigate(Screen.Calendar.route)
                                 },
                                 onExerciseClick = { exercise ->
                                     navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
                                 },
                                 onAddExerciseClick = {
                                     navController.navigate(Screen.WorkoutCategories.route)
+                                },
+                                onCalendarClick = {
+                                    navController.navigate(Screen.Calendar.route)
                                 }
                             )
                         }
@@ -120,7 +129,33 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+                        
+                        composable(Screen.Calendar.route) {
+                            CalendarScreen { date ->
+                                val workout = dataStorage.loadWorkout(date)
+                                if (workout != null) {
+                                    selectedWorkout = workout
+                                }
+                            }
+                        }
                     }
+                }
+                
+                if (selectedWorkout != null) {
+                    WorkoutPreviewDialog(
+                        workout = selectedWorkout!!,
+                        onCopy = {
+                            val today = Date()
+                            val copiedWorkout = Workout(today, selectedWorkout!!.exercises)
+                            dataStorage.saveWorkout(copiedWorkout)
+                            selectedWorkout = null
+                            navController.navigate(Screen.Start.route)
+                        },
+                        onDismiss = {
+                            selectedWorkout = null
+                            navController.navigate(Screen.Start.route)
+                        }
+                    )
                 }
             }
         }
@@ -197,13 +232,12 @@ fun StartScreen(
     onStartWorkoutClick: () -> Unit,
     onCopyWorkoutClick: () -> Unit,
     onExerciseClick: (String) -> Unit,
-    onAddExerciseClick: () -> Unit
+    onAddExerciseClick: () -> Unit,
+    onCalendarClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
     val hasWorkoutToday = remember { mutableStateOf(false) }
-    var showCalendar by remember { mutableStateOf(false) }
-    var selectedWorkout by remember { mutableStateOf<Workout?>(null) }
     
     // Load workout for current date
     LaunchedEffect(Unit) {
@@ -217,7 +251,7 @@ fun StartScreen(
     ) {
         AppHeader(
             onAddClick = onAddExerciseClick,
-            onCalendarClick = { showCalendar = true }
+            onCalendarClick = onCalendarClick
         )
         
         if (hasWorkoutToday.value) {
@@ -235,7 +269,7 @@ fun StartScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = { showCalendar = true },
+                    onClick = onCopyWorkoutClick,
                     modifier = Modifier.weight(1f, fill = false)
                 ) {
                     Text(text = "Copy Workout")
@@ -249,34 +283,5 @@ fun StartScreen(
                 }
             }
         }
-    }
-    
-    if (showCalendar) {
-        CalendarScreen(
-            onDaySelected = { date ->
-                val workout = dataStorage.loadWorkout(date)
-                if (workout != null) {
-                    selectedWorkout = workout
-                }
-            }
-        )
-    }
-    
-    if (selectedWorkout != null) {
-        WorkoutPreviewDialog(
-            workout = selectedWorkout!!,
-            onCopy = {
-                val today = Date()
-                val copiedWorkout = Workout(today, selectedWorkout!!.exercises)
-                dataStorage.saveWorkout(copiedWorkout)
-                hasWorkoutToday.value = true
-                selectedWorkout = null
-                showCalendar = false
-            },
-            onDismiss = {
-                selectedWorkout = null
-                showCalendar = false
-            }
-        )
     }
 }

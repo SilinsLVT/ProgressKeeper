@@ -12,4 +12,7 @@ sealed class Screen(val route: String) {
     object Workout : Screen("workout") {
         fun createRoute() = "workout"
     }
+    object Calendar : Screen("calendar") {
+        fun createRoute() = "calendar"
+    }
 } 
