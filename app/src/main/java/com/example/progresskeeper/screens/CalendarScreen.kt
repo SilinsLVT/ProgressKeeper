@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -40,34 +42,81 @@ fun CalendarScreen(
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
-    var currentMonth by remember { mutableStateOf(Calendar.getInstance()) }
     var workouts by remember { mutableStateOf<List<Workout>>(emptyList()) }
+    val listState = rememberLazyListState()
     
     // Load all workouts
     LaunchedEffect(Unit) {
         workouts = dataStorage.loadAllWorkouts()
     }
     
-    Column(
+    // Generate months from 2020 to 2050
+    val months = remember {
+        val calendar = Calendar.getInstance()
+        val startYear = 2020
+        val endYear = 2050
+        val monthsList = mutableListOf<Calendar>()
+        
+        // Add past months
+        calendar.set(Calendar.YEAR, startYear)
+        calendar.set(Calendar.MONTH, Calendar.JANUARY)
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        
+        while (calendar.get(Calendar.YEAR) <= endYear) {
+            monthsList.add(calendar.clone() as Calendar)
+            calendar.add(Calendar.MONTH, 1)
+        }
+        
+        monthsList
+    }
+    
+    // Find current month index and scroll to it
+    LaunchedEffect(Unit) {
+        val currentMonth = Calendar.getInstance()
+        val currentMonthIndex = months.indexOfFirst { month ->
+            month.get(Calendar.YEAR) == currentMonth.get(Calendar.YEAR) &&
+            month.get(Calendar.MONTH) == currentMonth.get(Calendar.MONTH)
+        }
+        if (currentMonthIndex != -1) {
+            listState.animateScrollToItem(currentMonthIndex)
+        }
+    }
+    
+    LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        // Month and year header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-                    .format(currentMonth.time),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+        items(months) { month ->
+            MonthView(
+                month = month,
+                workouts = workouts,
+                onDaySelected = onDaySelected
             )
         }
+    }
+}
+
+@Composable
+fun MonthView(
+    month: Calendar,
+    workouts: List<Workout>,
+    onDaySelected: (Date) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Month and year header
+        Text(
+            text = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+                .format(month.time),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
         
         // Days of week header
         Row(
@@ -85,7 +134,7 @@ fun CalendarScreen(
         }
         
         // Calendar grid
-        val calendar = currentMonth.clone() as Calendar
+        val calendar = month.clone() as Calendar
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -101,7 +150,7 @@ fun CalendarScreen(
                     repeat(7) { dayOfWeek ->
                         val dayNumber = week * 7 + dayOfWeek - firstDayOfWeek + 2
                         if (dayNumber in 1..daysInMonth) {
-                            val dayCalendar = currentMonth.clone() as Calendar
+                            val dayCalendar = month.clone() as Calendar
                             dayCalendar.set(Calendar.DAY_OF_MONTH, dayNumber)
                             val dayDate = dayCalendar.time
                             
