@@ -153,7 +153,6 @@ class MainActivity : ComponentActivity() {
                         },
                         onDismiss = {
                             selectedWorkout = null
-                            navController.navigate(Screen.Start.route)
                         }
                     )
                 }

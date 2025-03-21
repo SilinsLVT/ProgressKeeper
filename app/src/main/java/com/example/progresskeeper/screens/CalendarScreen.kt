@@ -70,7 +70,7 @@ fun CalendarScreen(
         monthsList
     }
     
-    // Find current month index and scroll to it
+    // Find current month index and scroll to it immediately
     LaunchedEffect(Unit) {
         val currentMonth = Calendar.getInstance()
         val currentMonthIndex = months.indexOfFirst { month ->
@@ -78,7 +78,7 @@ fun CalendarScreen(
             month.get(Calendar.MONTH) == currentMonth.get(Calendar.MONTH)
         }
         if (currentMonthIndex != -1) {
-            listState.animateScrollToItem(currentMonthIndex)
+            listState.scrollToItem(currentMonthIndex)
         }
     }
     
@@ -219,13 +219,31 @@ fun WorkoutPreviewDialog(
             )
             
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(workout.exercises) { exercise ->
-                    Text(
-                        text = exercise.name,
-                        fontSize = 16.sp
-                    )
+                    Column {
+                        Text(
+                            text = exercise.name,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        
+                        if (exercise.sets.isNotEmpty()) {
+                            Column(
+                                modifier = Modifier.padding(start = 16.dp)
+                            ) {
+                                exercise.sets.forEach { set ->
+                                    Text(
+                                        text = "Set ${set.setNumber}: ${set.weight}kg x ${set.reps} reps",
+                                        fontSize = 14.sp,
+                                        modifier = Modifier.padding(vertical = 2.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
             
@@ -243,7 +261,7 @@ fun WorkoutPreviewDialog(
                         .clickable(onClick = onCopy)
                 )
                 Text(
-                    text = "Close",
+                    text = "Cancel",
                     color = Color(0xFFF44336),
                     modifier = Modifier.clickable(onClick = onDismiss)
                 )
