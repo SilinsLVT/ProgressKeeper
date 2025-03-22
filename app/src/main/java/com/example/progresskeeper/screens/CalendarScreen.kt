@@ -35,6 +35,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 
 @Composable
 fun CalendarScreen(
@@ -210,13 +212,28 @@ fun WorkoutPreviewDialog(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(
-                text = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.getDefault())
-                    .format(workout.date),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            // Date header with bottom border
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp)
+                    .drawBehind {
+                        drawLine(
+                            color = Color.LightGray,
+                            start = Offset(0f, size.height + 8.dp.toPx()),
+                            end = Offset(size.width, size.height + 8.dp.toPx()),
+                            strokeWidth = 1f
+                        )
+                    }
+            ) {
+                Text(
+                    text = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.getDefault())
+                        .format(workout.date),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
             
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
