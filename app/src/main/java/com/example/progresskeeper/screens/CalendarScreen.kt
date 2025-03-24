@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,6 +16,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.progresskeeper.data.DataStorage
@@ -37,29 +41,30 @@ import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Info
 
 @Composable
 fun CalendarScreen(
-    onDaySelected: (Date) -> Unit
+    onDaySelected: (Date) -> Unit,
+    onHomeClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
     var workouts by remember { mutableStateOf<List<Workout>>(emptyList()) }
     val listState = rememberLazyListState()
-    
-    // Load all workouts
+
     LaunchedEffect(Unit) {
         workouts = dataStorage.loadAllWorkouts()
     }
-    
-    // Generate months from 2020 to 2050
+
     val months = remember {
         val calendar = Calendar.getInstance()
         val startYear = 2020
         val endYear = 2050
         val monthsList = mutableListOf<Calendar>()
-        
-        // Add past months
+
         calendar.set(Calendar.YEAR, startYear)
         calendar.set(Calendar.MONTH, Calendar.JANUARY)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
@@ -71,8 +76,7 @@ fun CalendarScreen(
         
         monthsList
     }
-    
-    // Find current month index and scroll to it immediately
+
     LaunchedEffect(Unit) {
         val currentMonth = Calendar.getInstance()
         val currentMonthIndex = months.indexOfFirst { month ->
@@ -84,18 +88,81 @@ fun CalendarScreen(
         }
     }
     
-    LazyColumn(
-        state = listState,
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AppHeader(
+            title = "Calendar",
+            onCalendarClick = {},
+            onAddClick = {},
+            onHelpClick = {},
+            onHomeClick = onHomeClick
+        )
+        
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            items(months) { month ->
+                MonthView(
+                    month = month,
+                    workouts = workouts,
+                    onDaySelected = onDaySelected
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AppHeader(
+    title: String,
+    onCalendarClick: () -> Unit,
+    onAddClick: () -> Unit,
+    onHelpClick: () -> Unit,
+    onHomeClick: () -> Unit
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .background(Color(0xFF424242))
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        items(months) { month ->
-            MonthView(
-                month = month,
-                workouts = workouts,
-                onDaySelected = onDaySelected
+        IconButton(
+            onClick = onHomeClick,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Text(
+                text = "PK",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        
+        Text(
+            text = title,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+        
+        IconButton(
+            onClick = onHelpClick,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Help",
+                tint = Color.White,
+                modifier = Modifier.size(28.dp)
             )
         }
     }
@@ -111,7 +178,6 @@ fun MonthView(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Month and year header
         Text(
             text = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
                 .format(month.time),
@@ -119,8 +185,7 @@ fun MonthView(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        
-        // Days of week header
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -134,8 +199,6 @@ fun MonthView(
                 )
             }
         }
-        
-        // Calendar grid
         val calendar = month.clone() as Calendar
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
@@ -212,7 +275,6 @@ fun WorkoutPreviewDialog(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Date header with bottom border
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

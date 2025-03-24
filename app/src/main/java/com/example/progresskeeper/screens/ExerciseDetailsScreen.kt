@@ -55,8 +55,7 @@ fun ExerciseDetailsScreen(
     val sets = remember { mutableStateListOf<ExerciseSet>() }
     var isEditMode by remember { mutableStateOf(false) }
     var editingSetIndex by remember { mutableStateOf(-1) }
-    
-    // Load saved exercise sets on initial composition
+
     DisposableEffect(exercise) {
         val savedSets = dataStorage.loadExerciseSets(exercise)
         sets.clear()
@@ -68,8 +67,6 @@ fun ExerciseDetailsScreen(
     fun saveExerciseData() {
         // Save sets to SharedPreferences
         dataStorage.saveExerciseSets(exercise, sets)
-        
-        // Update workout with the new sets
         val today = Date()
         val currentWorkout = dataStorage.loadWorkout(today) ?: Workout(today, emptyList())
         

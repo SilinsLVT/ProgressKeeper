@@ -95,9 +95,14 @@ class MainActivity : ComponentActivity() {
                         }
                         
                         composable(Screen.WorkoutCategories.route) {
-                            WorkoutCategoriesScreen { category ->
-                                navController.navigate(Screen.Exercises.createRoute(category))
-                            }
+                            WorkoutCategoriesScreen(
+                                onCategorySelected = { category ->
+                                    navController.navigate(Screen.Exercises.createRoute(category))
+                                },
+                                onHomeClick = {
+                                    navController.navigate(Screen.Start.route)
+                                }
+                            )
                         }
                         
                         composable(
@@ -131,12 +136,17 @@ class MainActivity : ComponentActivity() {
                         }
                         
                         composable(Screen.Calendar.route) {
-                            CalendarScreen { date ->
-                                val workout = dataStorage.loadWorkout(date)
-                                if (workout != null) {
-                                    selectedWorkout = workout
+                            CalendarScreen(
+                                onDaySelected = { date ->
+                                    val workout = dataStorage.loadWorkout(date)
+                                    if (workout != null) {
+                                        selectedWorkout = workout
+                                    }
+                                },
+                                onHomeClick = {
+                                    navController.navigate(Screen.Start.route)
                                 }
-                            }
+                            )
                         }
                     }
                 }

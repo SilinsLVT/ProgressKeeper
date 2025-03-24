@@ -183,12 +183,10 @@ fun ExercisesScreen(
                                 strokeWidth = 1f
                             )
                         }
-                        .clickable { 
-                            // Add exercise to today's workout
+                        .clickable {
                             val today = Date()
                             val currentWorkout = dataStorage.loadWorkout(today) ?: Workout(today, emptyList())
-                            
-                            // Check if exercise already exists in workout
+
                             if (!currentWorkout.exercises.any { it.name == exercise }) {
                                 val updatedExercises = currentWorkout.exercises + WorkoutExercise(exercise, emptyList())
                                 val updatedWorkout = Workout(today, updatedExercises)

@@ -50,8 +50,7 @@ fun WorkoutScreen(
     var workout by remember { mutableStateOf<Workout?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var exerciseToDelete by remember { mutableStateOf<String?>(null) }
-    
-    // Load workout for current date
+
     LaunchedEffect(Unit) {
         val today = Date()
         val loadedWorkout = dataStorage.loadWorkout(today)
@@ -64,8 +63,7 @@ fun WorkoutScreen(
         }
         workout = loadedWorkout
     }
-    
-    // Refresh workout when screen becomes visible again
+
     LaunchedEffect(Unit) {
         val today = Date()
         val loadedWorkout = dataStorage.loadWorkout(today)

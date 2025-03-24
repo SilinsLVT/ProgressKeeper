@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,9 +19,13 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
-fun WorkoutCategoriesScreen(onCategoryClick: (String) -> Unit) {
+fun WorkoutCategoriesScreen(
+    onCategorySelected: (String) -> Unit,
+    onHomeClick: () -> Unit
+) {
     val categories = listOf(
         "Traps",
         "Shoulders",
@@ -32,34 +37,48 @@ fun WorkoutCategoriesScreen(onCategoryClick: (String) -> Unit) {
         "Legs",
         "Calves"
     )
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(0.dp)
+    
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(categories) { category ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .drawBehind {
-                        drawLine(
-                            color = Color.LightGray.copy(alpha = 0.5f),
-                            start = Offset(0f, size.height),
-                            end = Offset(size.width, size.height),
-                            strokeWidth = 1f
-                        )
-                    }
-                    .clickable { onCategoryClick(category) }
-                    .padding(vertical = 16.dp, horizontal = 4.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Text(
-                    text = category,
-                    color = Color.Black
+        AppHeader(
+            title = "Muscle Groups",
+            onCalendarClick = {},
+            onAddClick = {},
+            onHelpClick = {},
+            onHomeClick = onHomeClick
+        )
+        
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(categories) { category ->
+                CategoryItem(
+                    category = category,
+                    onClick = { onCategorySelected(category) }
                 )
             }
         }
+    }
+}
+
+@Composable
+fun CategoryItem(
+    category: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp, horizontal = 16.dp)
+    ) {
+        Text(
+            text = category,
+            fontSize = 16.sp
+        )
     }
 } 
