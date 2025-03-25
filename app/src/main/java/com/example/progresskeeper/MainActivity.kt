@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
@@ -50,6 +52,8 @@ import com.example.progresskeeper.screens.CalendarScreen
 import com.example.progresskeeper.screens.WorkoutPreviewDialog
 import com.example.progresskeeper.ui.theme.ProgressKeeperTheme
 import java.util.Date
+import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -150,7 +154,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                
                 if (selectedWorkout != null) {
                     WorkoutPreviewDialog(
                         workout = selectedWorkout!!,
@@ -263,17 +266,46 @@ fun StartScreen(
             onCalendarClick = onCalendarClick
         )
         
+        val today = Date()
+        val calendar = Calendar.getInstance().apply { time = today }
+        val dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
+        val month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())
+        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        val daySuffix = when (dayOfMonth) {
+            1, 21, 31 -> "st"
+            2, 22 -> "nd"
+            3, 23 -> "rd"
+            else -> "th"
+        }
+        
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(vertical = 12.dp)
+        ) {
+            Text(
+                text = "$dayOfWeek, $month $dayOfMonth$daySuffix",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+                fontSize = 20.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+        }
+        
         if (hasWorkoutToday.value) {
             WorkoutScreen(
                 onExerciseClick = onExerciseClick,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = 8.dp)
             )
         } else {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
-                    .padding(top = 16.dp),
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
