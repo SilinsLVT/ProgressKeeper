@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
@@ -92,10 +94,20 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         
-                        composable(Screen.Workout.route) {
-                            WorkoutScreen { exercise ->
-                                navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
-                            }
+                        composable(
+                            route = Screen.Workout.route,
+                            arguments = listOf(
+                                navArgument("date") { type = NavType.LongType }
+                            )
+                        ) { backStackEntry ->
+                            val dateLong = backStackEntry.arguments?.getLong("date") ?: return@composable
+                            val date = Date(dateLong)
+                            WorkoutScreen(
+                                date = date,
+                                onExerciseClick = { exercise ->
+                                    navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
+                                }
+                            )
                         }
                         
                         composable(Screen.WorkoutCategories.route) {
@@ -120,6 +132,9 @@ class MainActivity : ComponentActivity() {
                                 category = category,
                                 onExerciseClick = { exercise ->
                                     navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
+                                },
+                                onHomeClick = {
+                                    navController.navigate(Screen.Start.route)
                                 }
                             )
                         }
@@ -135,6 +150,9 @@ class MainActivity : ComponentActivity() {
                                 exercise = exercise,
                                 onSaveClick = {
                                     navController.navigate(Screen.Workout.route)
+                                },
+                                onHomeClick = {
+                                    navController.navigate(Screen.Start.route)
                                 }
                             )
                         }
@@ -249,13 +267,15 @@ fun StartScreen(
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
-    val hasWorkoutToday = remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableStateOf(Date()) }
+    var hasWorkout by remember { mutableStateOf(false) }
+    var currentWorkout by remember { mutableStateOf<Workout?>(null) }
     
-    // Load workout for current date
-    LaunchedEffect(Unit) {
-        val today = Date()
-        val workout = dataStorage.loadWorkout(today)
-        hasWorkoutToday.value = workout != null
+    // Load workout for selected date
+    LaunchedEffect(selectedDate) {
+        val workout = dataStorage.loadWorkout(selectedDate)
+        hasWorkout = workout != null
+        currentWorkout = workout
     }
     
     Column(
@@ -266,8 +286,7 @@ fun StartScreen(
             onCalendarClick = onCalendarClick
         )
         
-        val today = Date()
-        val calendar = Calendar.getInstance().apply { time = today }
+        val calendar = Calendar.getInstance().apply { time = selectedDate }
         val dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
         val month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())
         val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
@@ -284,44 +303,69 @@ fun StartScreen(
                 .background(Color.Black)
                 .padding(vertical = 12.dp)
         ) {
-            Text(
-                text = "$dayOfWeek, $month $dayOfMonth$daySuffix",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center),
-                fontSize = 20.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        calendar.add(Calendar.DAY_OF_MONTH, -1)
+                        selectedDate = calendar.time
+                    },
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Previous day",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                
+                Text(
+                    text = "$dayOfWeek, $month $dayOfMonth$daySuffix",
+                    modifier = Modifier,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                
+                IconButton(
+                    onClick = {
+                        calendar.add(Calendar.DAY_OF_MONTH, 1)
+                        selectedDate = calendar.time
+                    },
+                    modifier = Modifier.padding(end = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Next day",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         }
         
-        if (hasWorkoutToday.value) {
+        if (hasWorkout) {
             WorkoutScreen(
+                date = selectedDate,
                 onExerciseClick = onExerciseClick,
                 modifier = Modifier.padding(top = 8.dp)
             )
         } else {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Button(
-                    onClick = onCopyWorkoutClick,
-                    modifier = Modifier.weight(1f, fill = false)
-                ) {
-                    Text(text = "Copy Workout")
-                }
-                
-                Button(
-                    onClick = onStartWorkoutClick,
-                    modifier = Modifier.weight(1f, fill = false)
-                ) {
-                    Text(text = "Start Workout")
-                }
+                Text(
+                    text = "No workout",
+                    fontSize = 18.sp,
+                    color = Color.Gray
+                )
             }
         }
     }

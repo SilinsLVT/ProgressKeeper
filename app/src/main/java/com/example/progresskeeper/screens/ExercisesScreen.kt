@@ -41,7 +41,8 @@ import java.util.Date
 @Composable
 fun ExercisesScreen(
     category: String,
-    onExerciseClick: (String) -> Unit
+    onExerciseClick: (String) -> Unit,
+    onHomeClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
@@ -133,14 +134,20 @@ fun ExercisesScreen(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
+        AppHeader(
+            title = category,
+            onCalendarClick = {},
+            onAddClick = {},
+            onHelpClick = {},
+            onHomeClick = onHomeClick
+        )
+        
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -195,7 +202,7 @@ fun ExercisesScreen(
                             
                             onExerciseClick(exercise)
                         }
-                        .padding(vertical = 16.dp, horizontal = 4.dp),
+                        .padding(vertical = 16.dp, horizontal = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Text(

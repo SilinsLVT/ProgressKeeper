@@ -46,7 +46,8 @@ import java.util.Date
 @Composable
 fun ExerciseDetailsScreen(
     exercise: String,
-    onSaveClick: () -> Unit
+    onSaveClick: () -> Unit,
+    onHomeClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
@@ -83,143 +84,153 @@ fun ExerciseDetailsScreen(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = exercise)
-
-        OutlinedTextField(
-            value = weight,
-            onValueChange = { newValue ->
-                if (newValue.isEmpty() || newValue.matches(Regex("^\\d*[.,]?\\d*$"))) {
-                    weight = newValue
-                }
-            },
-            label = { Text("Weight") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier.fillMaxWidth()
+        AppHeader(
+            title = exercise,
+            onCalendarClick = {},
+            onAddClick = {},
+            onHelpClick = {},
+            onHomeClick = onHomeClick
         )
-
-        OutlinedTextField(
-            value = reps,
-            onValueChange = { newValue ->
-                if (newValue.isEmpty() || newValue.matches(Regex("^\\d*[.,]?\\d*$"))) {
-                    reps = newValue
-                }
-            },
-            label = { Text("Reps") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Button(
-            onClick = {
-                if (weight.isNotEmpty() && reps.isNotEmpty()) {
-                    if (isEditMode && editingSetIndex >= 0 && editingSetIndex < sets.size) {
-                        val currentSet = sets[editingSetIndex]
-                        sets[editingSetIndex] = ExerciseSet(currentSet.setNumber, weight, reps)
-                        isEditMode = false
-                        editingSetIndex = -1
-                    } else {
-                        sets.add(ExerciseSet(sets.size + 1, weight, reps))
-                    }
-                    weight = ""
-                    reps = ""
-                    saveExerciseData()
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isEditMode) Color(0xFFFF9800) else Color(0xFF4CAF50)
-            )
+        
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(if (isEditMode) "Update" else "Save")
-        }
+            OutlinedTextField(
+                value = weight,
+                onValueChange = { newValue ->
+                    if (newValue.isEmpty() || newValue.matches(Regex("^\\d*[.,]?\\d*$"))) {
+                        weight = newValue
+                    }
+                },
+                label = { Text("Weight") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        if (isEditMode) {
+            OutlinedTextField(
+                value = reps,
+                onValueChange = { newValue ->
+                    if (newValue.isEmpty() || newValue.matches(Regex("^\\d*[.,]?\\d*$"))) {
+                        reps = newValue
+                    }
+                },
+                label = { Text("Reps") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Button(
                 onClick = {
-                    isEditMode = false
-                    editingSetIndex = -1
-                    weight = ""
-                    reps = ""
+                    if (weight.isNotEmpty() && reps.isNotEmpty()) {
+                        if (isEditMode && editingSetIndex >= 0 && editingSetIndex < sets.size) {
+                            val currentSet = sets[editingSetIndex]
+                            sets[editingSetIndex] = ExerciseSet(currentSet.setNumber, weight, reps)
+                            isEditMode = false
+                            editingSetIndex = -1
+                        } else {
+                            sets.add(ExerciseSet(sets.size + 1, weight, reps))
+                        }
+                        weight = ""
+                        reps = ""
+                        saveExerciseData()
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF9E9E9E)
+                    containerColor = if (isEditMode) Color(0xFFFF9800) else Color(0xFF4CAF50)
                 )
             ) {
-                Text("Cancel")
+                Text(if (isEditMode) "Update" else "Save")
             }
-        }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(sets) { set ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .drawBehind {
-                            drawLine(
-                                color = Color.Gray.copy(alpha = 0.5f),
-                                start = Offset(0f, size.height),
-                                end = Offset(size.width, size.height),
-                                strokeWidth = 2f
-                            )
-                        }
+            if (isEditMode) {
+                Button(
+                    onClick = {
+                        isEditMode = false
+                        editingSetIndex = -1
+                        weight = ""
+                        reps = ""
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF9E9E9E)
+                    )
                 ) {
-                    Row(
+                    Text("Cancel")
+                }
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(sets) { set ->
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Set ${set.setNumber}")
-                        Text("${set.weight}kg")
-                        Text("${set.reps} reps")
-                        
-                        Row {
-                            IconButton(
-                                onClick = {
-                                    isEditMode = true
-                                    editingSetIndex = sets.indexOf(set)
-                                    weight = set.weight
-                                    reps = set.reps
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = "Edit set",
-                                    tint = Color(0xFF2196F3)
+                            .padding(horizontal = 8.dp)
+                            .drawBehind {
+                                drawLine(
+                                    color = Color.Gray.copy(alpha = 0.5f),
+                                    start = Offset(0f, size.height),
+                                    end = Offset(size.width, size.height),
+                                    strokeWidth = 2f
                                 )
                             }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Set ${set.setNumber}")
+                            Text("${set.weight}kg")
+                            Text("${set.reps} reps")
                             
-                            IconButton(
-                                onClick = {
-                                    sets.remove(set)
-                                    
-                                    // Renumber sets
-                                    for (i in 0 until sets.size) {
-                                        sets[i] = ExerciseSet(i + 1, sets[i].weight, sets[i].reps)
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        isEditMode = true
+                                        editingSetIndex = sets.indexOf(set)
+                                        weight = set.weight
+                                        reps = set.reps
                                     }
-                                    
-                                    saveExerciseData()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "Edit set",
+                                        tint = Color(0xFF2196F3)
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete set",
-                                    tint = Color(0xFFF44336)
-                                )
+                                
+                                IconButton(
+                                    onClick = {
+                                        sets.remove(set)
+                                        
+                                        // Renumber sets
+                                        for (i in 0 until sets.size) {
+                                            sets[i] = ExerciseSet(i + 1, sets[i].weight, sets[i].reps)
+                                        }
+                                        
+                                        saveExerciseData()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Delete set",
+                                        tint = Color(0xFFF44336)
+                                    )
+                                }
                             }
                         }
                     }
