@@ -48,44 +48,120 @@ fun WorkoutScreen(
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
-    val workout = remember(date) { dataStorage.loadWorkout(date) }
+    var workout by remember { mutableStateOf<Workout?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var exerciseToDelete by remember { mutableStateOf<String?>(null) }
 
-    if (workout != null) {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(workout.exercises) { exercise ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onExerciseClick(exercise.name) }
-                        .padding(horizontal = 16.dp)
+    // Load workout when date changes
+    LaunchedEffect(date) {
+        workout = dataStorage.loadWorkout(date)
+    }
+
+    // Reload workout after deletion
+    LaunchedEffect(showDeleteDialog) {
+        if (!showDeleteDialog) {
+            workout = dataStorage.loadWorkout(date)
+        }
+    }
+
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
+        when {
+            workout == null -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = exercise.name,
+                        text = "No workout for this date",
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Black
+                        color = Color.Gray
                     )
-                    
-                    if (exercise.sets.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier.padding(start = 16.dp, top = 8.dp)
-                        ) {
-                            exercise.sets.forEach { set ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                }
+            }
+            workout?.exercises?.isEmpty() == true -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No exercises added yet",
+                        fontSize = 18.sp,
+                        color = Color.Gray
+                    )
+                }
+            }
+            else -> {
+                workout?.let { currentWorkout ->
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(currentWorkout.exercises) { exercise ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFFF5F5F5)
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
                                 ) {
-                                    Text(
-                                        text = "Set ${set.setNumber}",
-                                        color = Color.Gray
-                                    )
-                                    Text(
-                                        text = "${set.weight}kg × ${set.reps} reps",
-                                        color = Color.Gray
-                                    )
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = exercise.name,
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color.Black,
+                                            modifier = Modifier.clickable { onExerciseClick(exercise.name) }
+                                        )
+                                        IconButton(
+                                            onClick = {
+                                                exerciseToDelete = exercise.name
+                                                showDeleteDialog = true
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Delete exercise",
+                                                tint = Color(0xFFF44336)
+                                            )
+                                        }
+                                    }
+                                    
+                                    if (exercise.sets.isNotEmpty()) {
+                                        Column(
+                                            modifier = Modifier.padding(start = 8.dp, top = 16.dp),
+                                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                        ) {
+                                            exercise.sets.forEach { set ->
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    Text(
+                                                        text = "Set ${set.setNumber}",
+                                                        color = Color.Black,
+                                                        fontSize = 16.sp
+                                                    )
+                                                    Text(
+                                                        text = "${set.weight}kg × ${set.reps} reps",
+                                                        color = Color.Black,
+                                                        fontSize = 16.sp
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -93,16 +169,39 @@ fun WorkoutScreen(
                 }
             }
         }
-    } else {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "No workout for this date",
-                fontSize = 18.sp,
-                color = Color.Gray
-            )
-        }
+    }
+
+    if (showDeleteDialog && exerciseToDelete != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+                exerciseToDelete = null
+            },
+            title = { Text("Delete Exercise") },
+            text = { Text("Are you sure you want to delete this exercise?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val updatedExercises = workout?.exercises?.filter { it.name != exerciseToDelete } ?: emptyList()
+                        val updatedWorkout = Workout(date, updatedExercises)
+                        dataStorage.saveWorkout(updatedWorkout)
+                        showDeleteDialog = false
+                        exerciseToDelete = null
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        exerciseToDelete = null
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 } 
