@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -44,6 +47,8 @@ import java.util.Date
 fun WorkoutScreen(
     date: Date,
     onExerciseClick: (String) -> Unit,
+    onStartWorkoutClick: () -> Unit,
+    onCopyWorkoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -52,12 +57,10 @@ fun WorkoutScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var exerciseToDelete by remember { mutableStateOf<String?>(null) }
 
-    // Load workout when date changes
     LaunchedEffect(date) {
         workout = dataStorage.loadWorkout(date)
     }
-
-    // Reload workout after deletion
+    
     LaunchedEffect(showDeleteDialog) {
         if (!showDeleteDialog) {
             workout = dataStorage.loadWorkout(date)
@@ -69,27 +72,97 @@ fun WorkoutScreen(
     ) {
         when {
             workout == null -> {
-                Box(
+                Column(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = "No workout for this date",
                         fontSize = 18.sp,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 32.dp)
                     )
+                    
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = onStartWorkoutClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            )
+                        ) {
+                            Text(
+                                text = "Start new workout",
+                                color = Color.Black
+                            )
+                        }
+                        
+                        Button(
+                            onClick = onCopyWorkoutClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            )
+                        ) {
+                            Text(
+                                text = "Copy previous workout",
+                                color = Color.Black
+                            )
+                        }
+                    }
                 }
             }
             workout?.exercises?.isEmpty() == true -> {
-                Box(
+                Column(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = "No exercises added yet",
                         fontSize = 18.sp,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 32.dp)
                     )
+                    
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = onStartWorkoutClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            )
+                        ) {
+                            Text(
+                                text = "Add exercises",
+                                color = Color.Black
+                            )
+                        }
+                        
+                        Button(
+                            onClick = onCopyWorkoutClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            )
+                        ) {
+                            Text(
+                                text = "Copy previous workout",
+                                color = Color.Black
+                            )
+                        }
+                    }
                 }
             }
             else -> {
@@ -102,7 +175,8 @@ fun WorkoutScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
+                                    .padding(horizontal = 16.dp)
+                                    .clickable { onExerciseClick(exercise.name) },
                                 colors = CardDefaults.cardColors(
                                     containerColor = Color(0xFFF5F5F5)
                                 )
@@ -121,8 +195,7 @@ fun WorkoutScreen(
                                             text = exercise.name,
                                             fontSize = 18.sp,
                                             fontWeight = FontWeight.Medium,
-                                            color = Color.Black,
-                                            modifier = Modifier.clickable { onExerciseClick(exercise.name) }
+                                            color = Color.Black
                                         )
                                         IconButton(
                                             onClick = {

@@ -106,6 +106,12 @@ class MainActivity : ComponentActivity() {
                                 date = date,
                                 onExerciseClick = { exercise ->
                                     navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
+                                },
+                                onStartWorkoutClick = {
+                                    navController.navigate(Screen.WorkoutCategories.route)
+                                },
+                                onCopyWorkoutClick = {
+                                    navController.navigate(Screen.Calendar.route)
                                 }
                             )
                         }
@@ -352,21 +358,18 @@ fun StartScreen(
             WorkoutScreen(
                 date = selectedDate,
                 onExerciseClick = onExerciseClick,
+                onStartWorkoutClick = onStartWorkoutClick,
+                onCopyWorkoutClick = onCopyWorkoutClick,
                 modifier = Modifier.padding(top = 8.dp)
             )
         } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No workout",
-                    fontSize = 18.sp,
-                    color = Color.Gray
-                )
-            }
+            WorkoutScreen(
+                date = selectedDate,
+                onExerciseClick = onExerciseClick,
+                onStartWorkoutClick = onStartWorkoutClick,
+                onCopyWorkoutClick = onCopyWorkoutClick,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
