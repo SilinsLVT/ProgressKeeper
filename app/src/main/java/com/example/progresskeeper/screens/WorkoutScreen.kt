@@ -60,7 +60,7 @@ fun WorkoutScreen(
     LaunchedEffect(date) {
         workout = dataStorage.loadWorkout(date)
     }
-    
+
     LaunchedEffect(showDeleteDialog) {
         if (!showDeleteDialog) {
             workout = dataStorage.loadWorkout(date)
