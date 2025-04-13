@@ -24,7 +24,7 @@ An android fitness app that helps you track your workouts, and the progress you 
 - [ ] Create the notification that appears if the user hasn't created a new workout in over 2 weeks
 
 
-### Applications to-do list:
+### Documentations to-do list:
 - [ ] Create the 1st section of the documentation (Ievads)
 - [ ] Create the 2nd section of the documentation (Programmatūras prasību specifikācija)
 - [ ] Create the 3rd section of the documentation (Izstrādes līdzekļu, rīku apraksts un izvēles pamatojums)
