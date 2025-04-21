@@ -56,6 +56,7 @@ import com.example.progresskeeper.ui.theme.ProgressKeeperTheme
 import java.util.Date
 import java.util.Calendar
 import java.util.Locale
+import androidx.compose.foundation.clickable
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -203,7 +204,7 @@ fun AppHeader(
     modifier: Modifier = Modifier,
     onCalendarClick: () -> Unit = {},
     onAddClick: () -> Unit,
-    onHelpClick: () -> Unit = {}
+    onHomeClick: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -217,7 +218,8 @@ fun AppHeader(
             text = "Progress Keeper",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = Color.White,
+            modifier = Modifier.clickable { onHomeClick() }
         )
         
         Row(
@@ -242,18 +244,6 @@ fun AppHeader(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add Exercise",
-                    tint = Color.White,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-            
-            IconButton(
-                onClick = onHelpClick,
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = "Help",
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
                 )
@@ -289,7 +279,8 @@ fun StartScreen(
     ) {
         AppHeader(
             onAddClick = onAddExerciseClick,
-            onCalendarClick = onCalendarClick
+            onCalendarClick = onCalendarClick,
+            onHomeClick = onStartWorkoutClick
         )
         
         val calendar = Calendar.getInstance().apply { time = selectedDate }

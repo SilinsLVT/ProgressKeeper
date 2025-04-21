@@ -17,4 +17,13 @@ sealed class Screen(val route: String) {
     object Calendar : Screen("calendar") {
         fun createRoute() = "calendar"
     }
+    object HelpMuscleGroups : Screen("help_muscle_groups") {
+        fun createRoute() = "help_muscle_groups"
+    }
+    object HelpExercises : Screen("help_exercises/{category}") {
+        fun createRoute(category: String) = "help_exercises/$category"
+    }
+    object ExerciseInstructions : Screen("exercise_instructions/{exercise}") {
+        fun createRoute(exercise: String) = "exercise_instructions/$exercise"
+    }
 } 
