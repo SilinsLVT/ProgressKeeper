@@ -91,6 +91,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onCalendarClick = {
                                     navController.navigate(Screen.Calendar.route)
+                                },
+                                onHelpClick = {
+                                    navController.navigate(Screen.HelpMuscleGroups.route)
                                 }
                             )
                         }
@@ -177,6 +180,50 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+
+                        composable(Screen.HelpMuscleGroups.route) {
+                            HelpMuscleGroupsScreen(
+                                onMuscleGroupSelected = { category ->
+                                    navController.navigate(Screen.HelpExercises.createRoute(category))
+                                },
+                                onHomeClick = {
+                                    navController.navigate(Screen.Start.route)
+                                }
+                            )
+                        }
+                        
+                        composable(
+                            route = Screen.HelpExercises.route,
+                            arguments = listOf(
+                                navArgument("category") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val category = backStackEntry.arguments?.getString("category") ?: return@composable
+                            HelpExercisesScreen(
+                                category = category,
+                                onExerciseClick = { exercise ->
+                                    navController.navigate(Screen.ExerciseInstructions.createRoute(exercise))
+                                },
+                                onHomeClick = {
+                                    navController.navigate(Screen.Start.route)
+                                }
+                            )
+                        }
+                        
+                        composable(
+                            route = Screen.ExerciseInstructions.route,
+                            arguments = listOf(
+                                navArgument("exercise") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val exercise = backStackEntry.arguments?.getString("exercise") ?: return@composable
+                            ExerciseInstructionsScreen(
+                                exercise = exercise,
+                                onHomeClick = {
+                                    navController.navigate(Screen.Start.route)
+                                }
+                            )
+                        }
                     }
                 }
                 if (selectedWorkout != null) {
@@ -204,6 +251,7 @@ fun AppHeader(
     modifier: Modifier = Modifier,
     onCalendarClick: () -> Unit = {},
     onAddClick: () -> Unit,
+    onHelpClick: () -> Unit = {},
     onHomeClick: () -> Unit
 ) {
     Row(
@@ -248,6 +296,18 @@ fun AppHeader(
                     modifier = Modifier.size(28.dp)
                 )
             }
+            
+            IconButton(
+                onClick = onHelpClick,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Help",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
     }
 }
@@ -259,7 +319,8 @@ fun StartScreen(
     onCopyWorkoutClick: () -> Unit,
     onExerciseClick: (String) -> Unit,
     onAddExerciseClick: () -> Unit,
-    onCalendarClick: () -> Unit
+    onCalendarClick: () -> Unit,
+    onHelpClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
@@ -280,6 +341,7 @@ fun StartScreen(
         AppHeader(
             onAddClick = onAddExerciseClick,
             onCalendarClick = onCalendarClick,
+            onHelpClick = onHelpClick,
             onHomeClick = onStartWorkoutClick
         )
         
