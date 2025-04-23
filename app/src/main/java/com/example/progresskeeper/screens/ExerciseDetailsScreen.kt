@@ -47,7 +47,8 @@ import java.util.Date
 fun ExerciseDetailsScreen(
     exercise: String,
     onSaveClick: () -> Unit,
-    onHomeClick: () -> Unit
+    onHomeClick: () -> Unit,
+    onHelpClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
@@ -90,7 +91,7 @@ fun ExerciseDetailsScreen(
             title = exercise,
             onCalendarClick = {},
             onAddClick = {},
-            onHelpClick = {},
+            onHelpClick = onHelpClick,
             onHomeClick = onHomeClick
         )
         

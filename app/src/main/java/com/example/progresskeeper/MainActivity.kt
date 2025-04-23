@@ -52,6 +52,9 @@ import com.example.progresskeeper.screens.ExerciseDetailsScreen
 import com.example.progresskeeper.screens.WorkoutScreen
 import com.example.progresskeeper.screens.CalendarScreen
 import com.example.progresskeeper.screens.WorkoutPreviewDialog
+import com.example.progresskeeper.screens.HelpMuscleGroupsScreen
+import com.example.progresskeeper.screens.HelpExercisesScreen
+import com.example.progresskeeper.screens.ExerciseInstructionsScreen
 import com.example.progresskeeper.ui.theme.ProgressKeeperTheme
 import java.util.Date
 import java.util.Calendar
@@ -127,6 +130,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onHomeClick = {
                                     navController.navigate(Screen.Start.route)
+                                },
+                                onHelpClick = {
+                                    navController.navigate(Screen.HelpMuscleGroups.route)
                                 }
                             )
                         }
@@ -145,6 +151,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onHomeClick = {
                                     navController.navigate(Screen.Start.route)
+                                },
+                                onHelpClick = {
+                                    navController.navigate(Screen.HelpMuscleGroups.route)
                                 }
                             )
                         }
@@ -163,6 +172,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onHomeClick = {
                                     navController.navigate(Screen.Start.route)
+                                },
+                                onHelpClick = {
+                                    navController.navigate(Screen.ExerciseInstructions.createRoute(exercise))
                                 }
                             )
                         }
@@ -266,8 +278,7 @@ fun AppHeader(
             text = "Progress Keeper",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.clickable { onHomeClick() }
+            color = Color.White
         )
         
         Row(

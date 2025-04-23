@@ -24,7 +24,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun WorkoutCategoriesScreen(
     onCategorySelected: (String) -> Unit,
-    onHomeClick: () -> Unit
+    onHomeClick: () -> Unit,
+    onHelpClick: () -> Unit
 ) {
     val categories = listOf(
         "Traps",
@@ -45,7 +46,7 @@ fun WorkoutCategoriesScreen(
             title = "Muscle Groups",
             onCalendarClick = {},
             onAddClick = {},
-            onHelpClick = {},
+            onHelpClick = onHelpClick,
             onHomeClick = onHomeClick
         )
         
