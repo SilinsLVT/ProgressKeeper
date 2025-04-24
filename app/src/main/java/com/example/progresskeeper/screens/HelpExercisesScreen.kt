@@ -24,6 +24,27 @@ fun HelpExercisesScreen(
             "Rack Pulls",
             "Face Pulls"
         )
+        "Shoulders" -> listOf(
+            "Military Press",
+            "Lateral Raises",
+            "Front Raises",
+            "Reverse Flyes",
+            "Arnold Press"
+        )
+        "Chest" -> listOf(
+            "Bench Press",
+            "Incline Dumbbell Press",
+            "Dips",
+            "Cable Flyes",
+            "Push-Ups"
+        )
+        "Back" -> listOf(
+            "Pull-Ups",
+            "Barbell Rows",
+            "Lat Pulldowns",
+            "Deadlifts",
+            "T-Bar Rows"
+        )
         else -> listOf("Coming soon...")
     }
     
