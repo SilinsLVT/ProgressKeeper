@@ -179,6 +179,126 @@ fun ExerciseInstructionsScreen(
             "Squeeze your shoulder blades together at the top",
             "Lower the weight back down with control"
         )
+        "Tricep Pushdowns" -> listOf(
+            "Stand facing a high pulley machine",
+            "Grab the bar with an overhand grip, hands shoulder-width apart",
+            "Keep your elbows close to your body",
+            "Push the bar down until your arms are fully extended",
+            "Squeeze your triceps at the bottom",
+            "Return to the starting position with control"
+        )
+        "Skull Crushers" -> listOf(
+            "Lie on a flat bench",
+            "Hold a barbell or EZ bar above your chest",
+            "Lower the weight toward your forehead by bending your elbows",
+            "Keep your upper arms perpendicular to the floor",
+            "Extend your arms back to the starting position",
+            "Keep your elbows in a fixed position"
+        )
+        "Close-Grip Bench Press" -> listOf(
+            "Lie on a flat bench",
+            "Grip the bar with hands closer than shoulder-width",
+            "Unrack the bar and lower it to your mid-chest",
+            "Keep your elbows close to your body",
+            "Press the bar back up until your arms are fully extended",
+            "Keep your core tight throughout the movement"
+        )
+        "Overhead Tricep Extensions" -> listOf(
+            "Stand with feet shoulder-width apart",
+            "Hold a dumbbell with both hands behind your head",
+            "Keep your upper arms close to your ears",
+            "Extend your arms upward",
+            "Lower the weight back down behind your head",
+            "Keep your elbows pointing forward"
+        )
+        "Diamond Push-Ups" -> listOf(
+            "Start in a push-up position",
+            "Place your hands close together, forming a diamond shape",
+            "Keep your body in a straight line",
+            "Lower your body by bending your elbows",
+            "Keep your elbows close to your body",
+            "Press back up to the starting position"
+        )
+        "Barbell Curls" -> listOf(
+            "Stand with feet shoulder-width apart",
+            "Hold a barbell with an underhand grip",
+            "Keep your elbows close to your body",
+            "Curl the bar up toward your shoulders",
+            "Squeeze your biceps at the top",
+            "Lower the bar back down with control"
+        )
+        "Hammer Curls" -> listOf(
+            "Stand with feet shoulder-width apart",
+            "Hold dumbbells with palms facing inward",
+            "Keep your elbows close to your body",
+            "Curl the weights up toward your shoulders",
+            "Squeeze your biceps at the top",
+            "Lower the weights back down with control"
+        )
+        "Preacher Curls" -> listOf(
+            "Sit at a preacher curl bench",
+            "Rest your arms on the pad",
+            "Hold a barbell or dumbbells with an underhand grip",
+            "Curl the weight up toward your shoulders",
+            "Squeeze your biceps at the top",
+            "Lower the weight back down with control"
+        )
+        "Incline Dumbbell Curls" -> listOf(
+            "Set the bench to a 45-degree angle",
+            "Sit back with dumbbells at your sides",
+            "Keep your elbows close to your body",
+            "Curl the weights up toward your shoulders",
+            "Squeeze your biceps at the top",
+            "Lower the weights back down with control"
+        )
+        "Concentration Curls" -> listOf(
+            "Sit on a bench with legs spread",
+            "Rest your elbow on your inner thigh",
+            "Hold a dumbbell with an underhand grip",
+            "Curl the weight up toward your shoulder",
+            "Squeeze your bicep at the top",
+            "Lower the weight back down with control"
+        )
+        "Wrist Curls" -> listOf(
+            "Sit on a bench with forearms resting on thighs",
+            "Hold a barbell or dumbbells with an underhand grip",
+            "Let your wrists hang over your knees",
+            "Curl your wrists up toward your body",
+            "Squeeze your forearms at the top",
+            "Lower the weight back down with control"
+        )
+        "Reverse Wrist Curls" -> listOf(
+            "Sit on a bench with forearms resting on thighs",
+            "Hold a barbell or dumbbells with an overhand grip",
+            "Let your wrists hang over your knees",
+            "Curl your wrists up toward your body",
+            "Squeeze your forearms at the top",
+            "Lower the weight back down with control"
+        )
+        "Farmers Walks" -> listOf(
+            "Stand with feet shoulder-width apart",
+            "Hold heavy dumbbells at your sides",
+            "Keep your shoulders back and chest up",
+            "Walk forward with short, controlled steps",
+            "Maintain proper posture throughout",
+            "Keep your core engaged"
+        )
+        "Plate Pinches" -> listOf(
+            "Stand with feet shoulder-width apart",
+            "Hold two weight plates together",
+            "Pinch the plates between your thumb and fingers",
+            "Hold for the desired duration",
+            "Keep your wrist straight",
+            "Maintain proper posture"
+        )
+        "Behind-the-Back Wrist Curls" -> listOf(
+            "Stand with feet shoulder-width apart",
+            "Hold a barbell behind your back",
+            "Keep your arms straight",
+            "Curl your wrists up toward your body",
+            "Squeeze your forearms at the top",
+            "Lower the weight back down with control"
+        )
         else -> listOf("Instructions coming soon...")
     }
     
@@ -301,6 +421,96 @@ fun ExerciseInstructionsScreen(
             "Rounding the back during the movement",
             "Using momentum to lift the weight",
             "Not maintaining proper shoulder position",
+            "Not controlling the negative portion"
+        )
+        "Tricep Pushdowns" -> listOf(
+            "Moving the elbows away from the body",
+            "Using momentum to complete the movement",
+            "Not fully extending the arms",
+            "Not controlling the negative portion"
+        )
+        "Skull Crushers" -> listOf(
+            "Moving the elbows too much",
+            "Not maintaining proper shoulder position",
+            "Using too much weight",
+            "Not controlling the negative portion"
+        )
+        "Close-Grip Bench Press" -> listOf(
+            "Flaring the elbows too much",
+            "Not maintaining proper shoulder position",
+            "Using too much weight",
+            "Not controlling the negative portion"
+        )
+        "Overhead Tricep Extensions" -> listOf(
+            "Moving the elbows too much",
+            "Not maintaining proper shoulder position",
+            "Using momentum to complete the movement",
+            "Not controlling the negative portion"
+        )
+        "Diamond Push-Ups" -> listOf(
+            "Not maintaining a straight body line",
+            "Not going deep enough",
+            "Moving the elbows too much",
+            "Not controlling the negative portion"
+        )
+        "Barbell Curls" -> listOf(
+            "Swinging the body to lift the weight",
+            "Moving the elbows away from the body",
+            "Not maintaining proper shoulder position",
+            "Not controlling the negative portion"
+        )
+        "Hammer Curls" -> listOf(
+            "Swinging the body to lift the weights",
+            "Moving the elbows away from the body",
+            "Not maintaining proper shoulder position",
+            "Not controlling the negative portion"
+        )
+        "Preacher Curls" -> listOf(
+            "Not maintaining proper arm position on the pad",
+            "Using momentum to lift the weight",
+            "Not maintaining proper shoulder position",
+            "Not controlling the negative portion"
+        )
+        "Incline Dumbbell Curls" -> listOf(
+            "Swinging the body to lift the weights",
+            "Moving the elbows away from the body",
+            "Not maintaining proper shoulder position",
+            "Not controlling the negative portion"
+        )
+        "Concentration Curls" -> listOf(
+            "Moving the elbow off the thigh",
+            "Swinging the body to lift the weight",
+            "Not maintaining proper shoulder position",
+            "Not controlling the negative portion"
+        )
+        "Wrist Curls" -> listOf(
+            "Moving the forearms during the movement",
+            "Using too much weight",
+            "Not maintaining proper wrist position",
+            "Not controlling the negative portion"
+        )
+        "Reverse Wrist Curls" -> listOf(
+            "Moving the forearms during the movement",
+            "Using too much weight",
+            "Not maintaining proper wrist position",
+            "Not controlling the negative portion"
+        )
+        "Farmers Walks" -> listOf(
+            "Rounding the shoulders",
+            "Not maintaining proper posture",
+            "Taking steps that are too long",
+            "Not engaging the core"
+        )
+        "Plate Pinches" -> listOf(
+            "Not maintaining proper grip",
+            "Using plates that are too heavy",
+            "Not maintaining proper wrist position",
+            "Not maintaining proper posture"
+        )
+        "Behind-the-Back Wrist Curls" -> listOf(
+            "Moving the arms during the movement",
+            "Using too much weight",
+            "Not maintaining proper wrist position",
             "Not controlling the negative portion"
         )
         else -> listOf("Common mistakes coming soon...")

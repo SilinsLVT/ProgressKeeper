@@ -45,6 +45,27 @@ fun HelpExercisesScreen(
             "Deadlifts",
             "T-Bar Rows"
         )
+        "Triceps" -> listOf(
+            "Tricep Pushdowns",
+            "Skull Crushers",
+            "Close-Grip Bench Press",
+            "Overhead Tricep Extensions",
+            "Diamond Push-Ups"
+        )
+        "Biceps" -> listOf(
+            "Barbell Curls",
+            "Hammer Curls",
+            "Preacher Curls",
+            "Incline Dumbbell Curls",
+            "Concentration Curls"
+        )
+        "Forearms" -> listOf(
+            "Wrist Curls",
+            "Reverse Wrist Curls",
+            "Farmers Walks",
+            "Plate Pinches",
+            "Behind-the-Back Wrist Curls"
+        )
         else -> listOf("Coming soon...")
     }
     
