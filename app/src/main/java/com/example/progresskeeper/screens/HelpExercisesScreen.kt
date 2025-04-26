@@ -66,6 +66,20 @@ fun HelpExercisesScreen(
             "Plate Pinches",
             "Behind-the-Back Wrist Curls"
         )
+        "Legs" -> listOf(
+            "Squats",
+            "Romanian Deadlifts",
+            "Leg Press",
+            "Lunges",
+            "Leg Extensions"
+        )
+        "Calves" -> listOf(
+            "Standing Calf Raises",
+            "Seated Calf Raises",
+            "Donkey Calf Raises",
+            "Jump Rope",
+            "Single-Leg Calf Raises"
+        )
         else -> listOf("Coming soon...")
     }
     

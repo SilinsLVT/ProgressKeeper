@@ -299,6 +299,86 @@ fun ExerciseInstructionsScreen(
             "Squeeze your forearms at the top",
             "Lower the weight back down with control"
         )
+        "Squats" -> listOf(
+            "Stand with feet shoulder-width apart",
+            "Keep your chest up and core engaged",
+            "Bend at your hips and knees",
+            "Lower until thighs are parallel to the floor",
+            "Keep your knees in line with your toes",
+            "Drive through your heels to stand back up"
+        )
+        "Romanian Deadlifts" -> listOf(
+            "Stand with feet shoulder-width apart",
+            "Hold a barbell with an overhand grip",
+            "Keep your back straight and chest up",
+            "Hinge at your hips, pushing them back",
+            "Lower the bar along your legs",
+            "Return to standing by driving your hips forward"
+        )
+        "Leg Press" -> listOf(
+            "Sit on the leg press machine",
+            "Place your feet shoulder-width apart on the platform",
+            "Keep your back flat against the pad",
+            "Release the safety handles",
+            "Lower the platform by bending your knees",
+            "Press the platform back up to starting position"
+        )
+        "Lunges" -> listOf(
+            "Stand with feet together",
+            "Take a step forward with one leg",
+            "Lower your body until both knees are at 90 degrees",
+            "Keep your front knee above your ankle",
+            "Push through your front heel to return to standing",
+            "Alternate legs for each rep"
+        )
+        "Leg Extensions" -> listOf(
+            "Sit on the leg extension machine",
+            "Adjust the pad to rest on your lower shins",
+            "Keep your back straight against the pad",
+            "Extend your legs until they're straight",
+            "Squeeze your quadriceps at the top",
+            "Lower the weight back down with control"
+        )
+        "Standing Calf Raises" -> listOf(
+            "Stand on a raised platform or step",
+            "Place the balls of your feet on the edge",
+            "Hold onto something for balance",
+            "Lower your heels below the platform",
+            "Raise up onto your toes as high as possible",
+            "Lower back down with control"
+        )
+        "Seated Calf Raises" -> listOf(
+            "Sit on the calf raise machine",
+            "Place the balls of your feet on the platform",
+            "Adjust the pad to rest on your thighs",
+            "Lower your heels as far as possible",
+            "Raise up onto your toes as high as possible",
+            "Lower back down with control"
+        )
+        "Donkey Calf Raises" -> listOf(
+            "Stand on a raised platform",
+            "Bend at your hips, placing hands on a support",
+            "Have a partner sit on your lower back",
+            "Lower your heels below the platform",
+            "Raise up onto your toes as high as possible",
+            "Lower back down with control"
+        )
+        "Jump Rope" -> listOf(
+            "Hold the rope handles at your sides",
+            "Keep your elbows close to your body",
+            "Jump on the balls of your feet",
+            "Keep your jumps small and controlled",
+            "Maintain a steady rhythm",
+            "Land softly on each jump"
+        )
+        "Single-Leg Calf Raises" -> listOf(
+            "Stand on one foot on a raised platform",
+            "Hold onto something for balance",
+            "Lower your heel below the platform",
+            "Raise up onto your toe as high as possible",
+            "Lower back down with control",
+            "Complete all reps on one leg before switching"
+        )
         else -> listOf("Instructions coming soon...")
     }
     
@@ -511,6 +591,66 @@ fun ExerciseInstructionsScreen(
             "Moving the arms during the movement",
             "Using too much weight",
             "Not maintaining proper wrist position",
+            "Not controlling the negative portion"
+        )
+        "Squats" -> listOf(
+            "Knees caving inward",
+            "Rising hips too fast",
+            "Not maintaining proper back position",
+            "Not going deep enough"
+        )
+        "Romanian Deadlifts" -> listOf(
+            "Rounding the back",
+            "Bending the knees too much",
+            "Not maintaining proper hip position",
+            "Using too much weight"
+        )
+        "Leg Press" -> listOf(
+            "Locking the knees at the top",
+            "Not maintaining proper back position",
+            "Using too much weight",
+            "Not going through full range of motion"
+        )
+        "Lunges" -> listOf(
+            "Stepping too far forward",
+            "Not maintaining proper knee alignment",
+            "Leaning too far forward",
+            "Not going deep enough"
+        )
+        "Leg Extensions" -> listOf(
+            "Using momentum to complete the movement",
+            "Not maintaining proper back position",
+            "Using too much weight",
+            "Not controlling the negative portion"
+        )
+        "Standing Calf Raises" -> listOf(
+            "Not going through full range of motion",
+            "Using momentum to complete the movement",
+            "Not maintaining proper balance",
+            "Not controlling the negative portion"
+        )
+        "Seated Calf Raises" -> listOf(
+            "Not going through full range of motion",
+            "Using momentum to complete the movement",
+            "Not maintaining proper back position",
+            "Not controlling the negative portion"
+        )
+        "Donkey Calf Raises" -> listOf(
+            "Not going through full range of motion",
+            "Using momentum to complete the movement",
+            "Not maintaining proper back position",
+            "Not controlling the negative portion"
+        )
+        "Jump Rope" -> listOf(
+            "Jumping too high",
+            "Not maintaining proper rhythm",
+            "Landing too hard",
+            "Not keeping the rope at the right length"
+        )
+        "Single-Leg Calf Raises" -> listOf(
+            "Not going through full range of motion",
+            "Using momentum to complete the movement",
+            "Not maintaining proper balance",
             "Not controlling the negative portion"
         )
         else -> listOf("Common mistakes coming soon...")
