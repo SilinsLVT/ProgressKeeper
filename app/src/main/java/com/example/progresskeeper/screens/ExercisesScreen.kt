@@ -53,8 +53,7 @@ fun ExercisesScreen(
     var errorMessage by remember { mutableStateOf("") }
     
     val exercises = remember { mutableStateListOf<String>() }
-    
-    // Load saved exercises when the screen is first shown
+
     DisposableEffect(category) {
         val defaultExercises = when (category) {
             "Traps" -> listOf(

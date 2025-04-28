@@ -67,7 +67,6 @@ fun ExerciseDetailsScreen(
     }
     
     fun saveExerciseData() {
-        // Save sets to SharedPreferences
         dataStorage.saveExerciseSets(exercise, sets)
         val today = Date()
         val currentWorkout = dataStorage.loadWorkout(today) ?: Workout(today, emptyList())

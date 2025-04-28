@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -338,8 +339,8 @@ fun StartScreen(
     var selectedDate by remember { mutableStateOf(Date()) }
     var hasWorkout by remember { mutableStateOf(false) }
     var currentWorkout by remember { mutableStateOf<Workout?>(null) }
-    
-    // Load workout for selected date
+
+
     LaunchedEffect(selectedDate) {
         val workout = dataStorage.loadWorkout(selectedDate)
         hasWorkout = workout != null
@@ -380,14 +381,20 @@ fun StartScreen(
             ) {
                 IconButton(
                     onClick = {
-                        calendar.add(Calendar.DAY_OF_MONTH, -1)
-                        selectedDate = calendar.time
+                        val allWorkouts = dataStorage.loadAllWorkouts()
+                        val previousWorkout = allWorkouts
+                            .filter { it.date.before(selectedDate) }
+                            .maxByOrNull { it.date.time }
+                        
+                        if (previousWorkout != null) {
+                            selectedDate = previousWorkout.date
+                        }
                     },
                     modifier = Modifier.padding(start = 16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Previous day",
+                        contentDescription = "Previous workout",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
@@ -403,14 +410,22 @@ fun StartScreen(
                 
                 IconButton(
                     onClick = {
-                        calendar.add(Calendar.DAY_OF_MONTH, 1)
-                        selectedDate = calendar.time
+                        val allWorkouts = dataStorage.loadAllWorkouts()
+                        val nextWorkout = allWorkouts
+                            .filter { it.date.after(selectedDate) }
+                            .minByOrNull { it.date.time }
+                        
+                        if (nextWorkout != null) {
+                            selectedDate = nextWorkout.date
+                        } else {
+                            selectedDate = Date()
+                        }
                     },
                     modifier = Modifier.padding(end = 16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "Next day",
+                        contentDescription = "Next workout",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
@@ -427,13 +442,51 @@ fun StartScreen(
                 modifier = Modifier.padding(top = 8.dp)
             )
         } else {
-            WorkoutScreen(
-                date = selectedDate,
-                onExerciseClick = onExerciseClick,
-                onStartWorkoutClick = onStartWorkoutClick,
-                onCopyWorkoutClick = onCopyWorkoutClick,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "No workout for this date",
+                    fontSize = 18.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 32.dp)
+                )
+                
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = onStartWorkoutClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent
+                        )
+                    ) {
+                        Text(
+                            text = "Start new workout",
+                            color = Color.Black
+                        )
+                    }
+                    
+                    Button(
+                        onClick = onCopyWorkoutClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent
+                        )
+                    ) {
+                        Text(
+                            text = "Copy previous workout",
+                            color = Color.Black
+                        )
+                    }
+                }
+            }
         }
     }
 }
