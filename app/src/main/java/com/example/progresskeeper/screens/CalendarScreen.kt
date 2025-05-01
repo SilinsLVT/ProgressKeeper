@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -42,6 +43,7 @@ import java.util.Locale
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 
@@ -191,14 +193,22 @@ fun MonthView(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").forEach { day ->
-                Text(
-                    text = day,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(4.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = day,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
+        
         val calendar = month.clone() as Calendar
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
@@ -234,14 +244,16 @@ fun MonthView(
                                     .padding(4.dp)
                                     .background(
                                         if (hasWorkout) Color(0xFF4CAF50).copy(alpha = 0.2f)
-                                        else Color.Transparent
+                                        else Color.Transparent,
+                                        shape = androidx.compose.foundation.shape.CircleShape
                                     )
                                     .clickable { onDaySelected(dayDate) },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = dayNumber.toString(),
-                                    color = if (hasWorkout) Color(0xFF4CAF50) else Color.Black
+                                    color = if (hasWorkout) Color(0xFF4CAF50) else Color.Black,
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         } else {
@@ -264,86 +276,110 @@ fun WorkoutPreviewDialog(
     onCopy: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    Card(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f))
+            .clickable(onClick = onDismiss)
     ) {
-        Column(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(top = 80.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp)
-                    .drawBehind {
-                        drawLine(
-                            color = Color.LightGray,
-                            start = Offset(0f, size.height + 8.dp.toPx()),
-                            end = Offset(size.width, size.height + 8.dp.toPx()),
-                            strokeWidth = 1f
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 24.dp)
+                            .drawBehind {
+                                drawLine(
+                                    color = Color.LightGray,
+                                    start = Offset(0f, size.height + 8.dp.toPx()),
+                                    end = Offset(size.width, size.height + 8.dp.toPx()),
+                                    strokeWidth = 1f
+                                )
+                            }
+                    ) {
+                        Text(
+                            text = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.getDefault())
+                                .format(workout.date),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
-            ) {
-                Text(
-                    text = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.getDefault())
-                        .format(workout.date),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-            
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(workout.exercises) { exercise ->
-                    Column {
-                        Text(
-                            text = exercise.name,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        
-                        if (exercise.sets.isNotEmpty()) {
-                            Column(
-                                modifier = Modifier.padding(start = 16.dp)
-                            ) {
-                                exercise.sets.forEach { set ->
-                                    Text(
-                                        text = "Set ${set.setNumber}: ${set.weight}kg x ${set.reps} reps",
-                                        fontSize = 14.sp,
-                                        modifier = Modifier.padding(vertical = 2.dp)
-                                    )
+                    
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(workout.exercises) { exercise ->
+                            Column {
+                                Text(
+                                    text = exercise.name,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                
+                                if (exercise.sets.isNotEmpty()) {
+                                    Column(
+                                        modifier = Modifier.padding(start = 16.dp)
+                                    ) {
+                                        exercise.sets.forEach { set ->
+                                            Text(
+                                                text = "Set ${set.setNumber}: ${set.weight}kg x ${set.reps} reps",
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                    
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = "Copy",
+                            color = Color(0xFF4CAF50),
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .clickable(onClick = onCopy)
+                        )
+                        Text(
+                            text = "Delete",
+                            color = Color(0xFFF44336),
+                            modifier = Modifier.clickable(onClick = onDismiss)
+                        )
+                    }
                 }
-            }
-            
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text(
-                    text = "Copy",
-                    color = Color(0xFF4CAF50),
+                
+                IconButton(
+                    onClick = onDismiss,
                     modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable(onClick = onCopy)
-                )
-                Text(
-                    text = "Cancel",
-                    color = Color(0xFFF44336),
-                    modifier = Modifier.clickable(onClick = onDismiss)
-                )
+                        .align(Alignment.TopEnd)
+                        .offset(x = (-8).dp, y = 2.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = Color(0xFFF44336)
+                    )
+                }
             }
         }
     }
