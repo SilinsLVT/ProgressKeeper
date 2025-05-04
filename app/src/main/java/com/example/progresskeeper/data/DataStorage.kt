@@ -148,4 +148,10 @@ class DataStorage(context: Context) {
         
         return workouts.sortedByDescending { it.date.time }
     }
+
+    fun deleteWorkout(date: Date) {
+        val editor = sharedPreferences.edit()
+        editor.remove("workout_${dateFormat.format(date)}")
+        editor.apply()
+    }
 } 

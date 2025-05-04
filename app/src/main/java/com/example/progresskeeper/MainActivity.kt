@@ -251,6 +251,10 @@ class MainActivity : ComponentActivity() {
                         },
                         onDismiss = {
                             selectedWorkout = null
+                        },
+                        onDelete = {
+                            selectedWorkout = null
+                            navController.navigate(Screen.Calendar.route)
                         }
                     )
                 }

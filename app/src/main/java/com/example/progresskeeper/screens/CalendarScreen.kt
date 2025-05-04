@@ -46,6 +46,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 
 @Composable
 fun CalendarScreen(
@@ -57,8 +59,12 @@ fun CalendarScreen(
     var workouts by remember { mutableStateOf<List<Workout>>(emptyList()) }
     val listState = rememberLazyListState()
 
-    LaunchedEffect(Unit) {
+    fun refreshWorkouts() {
         workouts = dataStorage.loadAllWorkouts()
+    }
+
+    LaunchedEffect(Unit) {
+        refreshWorkouts()
     }
 
     val months = remember {
@@ -274,8 +280,18 @@ fun MonthView(
 fun WorkoutPreviewDialog(
     workout: Workout,
     onCopy: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit
 ) {
+    val context = LocalContext.current
+    val dataStorage = remember { DataStorage(context) }
+    var workouts by remember { mutableStateOf<List<Workout>>(emptyList()) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        workouts = dataStorage.loadAllWorkouts()
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -363,7 +379,9 @@ fun WorkoutPreviewDialog(
                         Text(
                             text = "Delete",
                             color = Color(0xFFF44336),
-                            modifier = Modifier.clickable(onClick = onDismiss)
+                            modifier = Modifier.clickable {
+                                showDeleteDialog = true
+                            }
                         )
                     }
                 }
@@ -382,5 +400,35 @@ fun WorkoutPreviewDialog(
                 }
             }
         }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+            },
+            title = { Text("Delete Workout?") },
+            text = { Text("Are you sure you want to delete this workout?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        dataStorage.deleteWorkout(workout.date)
+                        onDelete()
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 } 
