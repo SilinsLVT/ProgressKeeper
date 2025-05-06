@@ -87,7 +87,7 @@ fun HelpExercisesScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         AppHeader(
-            title = category,
+            title = "Help - Exercises",
             onCalendarClick = {},
             onAddClick = {},
             onHelpClick = {},

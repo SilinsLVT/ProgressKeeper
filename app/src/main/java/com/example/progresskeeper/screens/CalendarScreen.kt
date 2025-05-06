@@ -104,7 +104,8 @@ fun CalendarScreen(
             onCalendarClick = {},
             onAddClick = {},
             onHelpClick = {},
-            onHomeClick = onHomeClick
+            onHomeClick = onHomeClick,
+            workoutCount = workouts.size
         )
         
         LazyColumn(
@@ -131,46 +132,64 @@ fun AppHeader(
     onCalendarClick: () -> Unit,
     onAddClick: () -> Unit,
     onHelpClick: () -> Unit,
-    onHomeClick: () -> Unit
+    onHomeClick: () -> Unit,
+    workoutCount: Int? = null
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFF424242))
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(
-            onClick = onHomeClick,
-            modifier = Modifier.size(48.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            IconButton(
+                onClick = onHomeClick,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Text(
+                    text = "PK",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            
             Text(
-                text = "PK",
-                color = Color.White,
+                text = title,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
             )
+            
+            IconButton(
+                onClick = onHelpClick,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Help",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
         
-        Text(
-            text = title,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
-        
-        IconButton(
-            onClick = onHelpClick,
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = "Help",
-                tint = Color.White,
-                modifier = Modifier.size(28.dp)
+        if (workoutCount != null) {
+            Text(
+                text = "$workoutCount workouts",
+                color = Color.White,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                textAlign = TextAlign.Center
             )
         }
     }

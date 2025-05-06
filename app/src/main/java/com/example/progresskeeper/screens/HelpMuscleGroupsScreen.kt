@@ -31,7 +31,7 @@ fun HelpMuscleGroupsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         AppHeader(
-            title = "Muscle Groups",
+            title = "Help - Muscle Groups",
             onCalendarClick = {},
             onAddClick = {},
             onHelpClick = {},

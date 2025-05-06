@@ -140,7 +140,7 @@ fun ExercisesScreen(
             title = category,
             onCalendarClick = {},
             onAddClick = {},
-            onHelpClick = onHelpClick,
+            onHelpClick = {},
             onHomeClick = onHomeClick
         )
         
