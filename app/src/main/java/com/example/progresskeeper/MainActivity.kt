@@ -1,9 +1,13 @@
 package com.example.progresskeeper
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,8 +65,41 @@ import java.util.Date
 import java.util.Calendar
 import java.util.Locale
 import androidx.compose.foundation.clickable
+import kotlinx.coroutines.delay
+import androidx.core.content.ContextCompat
 
 class MainActivity : ComponentActivity() {
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showNotification()
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    showNotification()
+                }
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            showNotification()
+        }
+    }
+
+    private fun showNotification() {
+        val notification = Notification(this)
+        notification.showWeeklyProgressNotification()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -72,6 +109,13 @@ class MainActivity : ComponentActivity() {
                 var selectedWorkout by remember { mutableStateOf<Workout?>(null) }
                 val context = LocalContext.current
                 val dataStorage = remember { DataStorage(context) }
+
+                // kad radi, tad so atkomente vala
+
+                // LaunchedEffect(Unit) {
+                //     // delay(3000)
+                //     // checkNotificationPermission()
+                // }
                 
                 Scaffold { innerPadding ->
                     NavHost(
@@ -153,8 +197,8 @@ class MainActivity : ComponentActivity() {
                                 onHomeClick = {
                                     navController.navigate(Screen.Start.route)
                                 },
-                                onHelpClick = {
-                                    navController.navigate(Screen.HelpMuscleGroups.route)
+                                onHelpClick = { category ->
+                                    navController.navigate(Screen.HelpExercises.createRoute(category))
                                 }
                             )
                         }
@@ -190,6 +234,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onHomeClick = {
                                     navController.navigate(Screen.Start.route)
+                                },
+                                onHelpClick = {
+                                    navController.navigate(Screen.HelpMuscleGroups.route)
                                 }
                             )
                         }

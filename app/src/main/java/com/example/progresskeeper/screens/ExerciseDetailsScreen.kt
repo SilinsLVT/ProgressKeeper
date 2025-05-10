@@ -87,10 +87,10 @@ fun ExerciseDetailsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         AppHeader(
-            title = "Exercise Details",
+            title = exercise,
             onCalendarClick = {},
             onAddClick = {},
-            onHelpClick = {},
+            onHelpClick = onHelpClick,
             onHomeClick = onHomeClick
         )
         

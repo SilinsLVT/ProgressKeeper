@@ -52,7 +52,8 @@ import androidx.compose.material3.TextButton
 @Composable
 fun CalendarScreen(
     onDaySelected: (Date) -> Unit,
-    onHomeClick: () -> Unit
+    onHomeClick: () -> Unit,
+    onHelpClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
@@ -103,7 +104,7 @@ fun CalendarScreen(
             title = "Calendar",
             onCalendarClick = {},
             onAddClick = {},
-            onHelpClick = {},
+            onHelpClick = { onHelpClick() },
             onHomeClick = onHomeClick,
             workoutCount = workouts.size
         )
@@ -183,7 +184,7 @@ fun AppHeader(
         
         if (workoutCount != null) {
             Text(
-                text = "$workoutCount workouts",
+                text = "$workoutCount workouts in total",
                 color = Color.White,
                 fontSize = 14.sp,
                 modifier = Modifier

@@ -43,7 +43,7 @@ fun ExercisesScreen(
     category: String,
     onExerciseClick: (String) -> Unit,
     onHomeClick: () -> Unit,
-    onHelpClick: () -> Unit
+    onHelpClick: (String) -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
@@ -140,7 +140,7 @@ fun ExercisesScreen(
             title = category,
             onCalendarClick = {},
             onAddClick = {},
-            onHelpClick = {},
+            onHelpClick = { onHelpClick(category) },
             onHomeClick = onHomeClick
         )
         

@@ -43,10 +43,10 @@ fun WorkoutCategoriesScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         AppHeader(
-            title = "Workout Categories",
+            title = "Muscle Groups",
             onCalendarClick = {},
             onAddClick = {},
-            onHelpClick = {},
+            onHelpClick = onHelpClick,
             onHomeClick = onHomeClick
         )
         
