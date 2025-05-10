@@ -30,6 +30,7 @@ class Notification(private val context: Context) {
             ).apply {
                 description = channelDescription
                 enableVibration(true)
+                lightColor = android.graphics.Color.RED
             }
             notificationManager.createNotificationChannel(channel)
         }
@@ -83,12 +84,13 @@ class Notification(private val context: Context) {
         )
 
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("Weekly Workout Progress")
             .setContentText("You've completed $weeklyWorkouts workouts this week!")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .setColor(android.graphics.Color.parseColor("#8B0000"))
             .build()
 
         notificationManager.notify(1, notification)
