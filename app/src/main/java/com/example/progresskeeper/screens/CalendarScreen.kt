@@ -437,7 +437,7 @@ fun WorkoutPreviewDialog(
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("Delete")
+                    Text("Delete", color = Color(0xFF8B0000))
                 }
             },
             dismissButton = {
@@ -446,7 +446,7 @@ fun WorkoutPreviewDialog(
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("Cancel")
+                    Text("Cancel", color = Color(0xFF4CAF50))
                 }
             }
         )

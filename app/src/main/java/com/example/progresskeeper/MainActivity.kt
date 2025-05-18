@@ -112,10 +112,10 @@ class MainActivity : ComponentActivity() {
 
                 // kad radi, tad so atkomente vala
 
-                 LaunchedEffect(Unit) {
-                     delay(3000)
-                     checkNotificationPermission()
-                 }
+                 //LaunchedEffect(Unit) {
+                     //delay(3000)
+                     //checkNotificationPermission()
+                // }
                 
                 Scaffold { innerPadding ->
                     NavHost(
