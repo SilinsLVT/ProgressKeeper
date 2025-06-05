@@ -1,21 +1,47 @@
 package com.example.progresskeeper.screens
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import android.os.Build
 
 @Composable
 fun ExerciseInstructionsScreen(
     exercise: String,
     onHomeClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .components {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+    }
+    
+    var showError by remember { mutableStateOf(false) }
+    
     val instructions = when (exercise) {
         "Barbell Shrugs" -> listOf(
             "Stand with your feet shoulder-width apart",
@@ -673,6 +699,88 @@ fun ExerciseInstructionsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
+                val gifFileName = when (exercise) {
+                    "Barbell Shrugs" -> "barbell_shrug.gif"
+                    "Dumbbell Shrugs" -> "dumbbell_shrug.gif"
+                    "Behind-the-Back Smith Machine Shrugs" -> "smith-back_shrug.gif"
+                    "Rack Pulls" -> "rack_pulls.gif"
+                    "Face Pulls" -> "face_pull.gif"
+                    "Military Press" -> "military_press.gif"
+                    "Lateral Raises" -> "lat_raises.gif"
+                    "Front Raises" -> "front_raises.gif"
+                    "Reverse Flyes" -> "reverse_flys.gif"
+                    "Arnold Press" -> "dumbbell-arnold_press.gif"
+                    "Bench Press" -> "barbell_benchpress.gif"
+                    "Incline Dumbbell Press" -> "dumbbell incline press.gif"
+                    "Dips" -> "dips.gif"
+                    "Cable Flyes" -> "cable_flys.gif"
+                    "Push-Ups" -> "push_ups.gif"
+                    "Pull-Ups" -> "pullups.gif"
+                    "Barbell Rows" -> "barbell rows.gif"
+                    "Lat Pulldowns" -> "lat pulldowns.gif"
+                    "Deadlifts" -> "deadlift.gif"
+                    "T-Bar Rows" -> "tbar rows.gif"
+                    "Tricep Pushdowns" -> "tricep_pushdowns.gif"
+                    "Skull Crushers" -> "skullcrushers.gif"
+                    "Close-Grip Bench Press" -> "closs grip bench press.gif"
+                    "Overhead Tricep Extensions" -> "overhead_tricep extensions.gif"
+                    "Diamond Push-Ups" -> "diamond_push ups.gif"
+                    "Barbell Curls" -> "barbell curls.gif"
+                    "Hammer Curls" -> "hammer curls.gif"
+                    "Preacher Curls" -> "preacher curls.gif"
+                    "Incline Dumbbell Curls" -> "incline dumbbell curls.gif"
+                    "Concentration Curls" -> "Concentration-Curl.gif"
+                    "Wrist Curls" -> "wrist curls.gif"
+                    "Reverse Wrist Curls" -> "Reverse-Wrist-Curl.gif"
+                    "Farmers Walks" -> "farmer walkers.gif"
+                    "Plate Pinches" -> "plate pinches.gif"
+                    "Behind-the-Back Wrist Curls" -> "behind the back wrist curls.gif"
+                    "Squats" -> "squat.gif"
+                    "Romanian Deadlifts" -> "Romanian-deadlift.gif"
+                    "Leg Press" -> "leg-press.gif"
+                    "Lunges" -> "lunges.gif"
+                    "Leg Extensions" -> "leg extensions.gif"
+                    "Standing Calf Raises" -> "standing calf raises.gif"
+                    "Seated Calf Raises" -> "seated calf raises.gif"
+                    "Donkey Calf Raises" -> "donkey calf raises.gif"
+                    "Jump Rope" -> "jump rope.gif"
+                    "Single-Leg Calf Raises" -> "single leg calf raises.gif"
+                    else -> null
+                }
+                
+                if (gifFileName != null) {
+                    Log.d("ExerciseInstructions", "Loading GIF: $gifFileName")
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            ImageRequest.Builder(LocalContext.current)
+                                .data("file:///android_asset/gifs/$gifFileName")
+                                .crossfade(true)
+                                .build(),
+                            imageLoader = imageLoader,
+                            onError = {
+                                Log.e("ExerciseInstructions", "Error loading GIF: $gifFileName", it.result.throwable)
+                                showError = true
+                            }
+                        ),
+                        contentDescription = "Exercise demonstration",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                    
+                    if (showError) {
+                        Text(
+                            text = "Error loading exercise demonstration",
+                            color = Color.Red,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 Text(
                     text = "Instructions",
                     modifier = Modifier.fillMaxWidth(),
