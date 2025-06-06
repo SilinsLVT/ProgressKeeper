@@ -80,7 +80,7 @@ fun HelpExercisesScreen(
             "Jump Rope",
             "Single-Leg Calf Raises"
         )
-        else -> listOf("Coming soon...")
+        else -> listOf("")
     }
     
     Column(

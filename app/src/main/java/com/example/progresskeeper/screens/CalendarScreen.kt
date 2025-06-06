@@ -295,7 +295,6 @@ fun MonthView(
         }
     }
 }
-
 @Composable
 fun WorkoutPreviewDialog(
     workout: Workout,

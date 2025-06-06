@@ -757,10 +757,7 @@ fun ExerciseInstructionsScreen(
                                 .crossfade(true)
                                 .build(),
                             imageLoader = imageLoader,
-                            onError = {
-                                Log.e("ExerciseInstructions", "Error loading GIF: $gifFileName", it.result.throwable)
-                                showError = true
-                            }
+
                         ),
                         contentDescription = "Exercise demonstration",
                         modifier = Modifier
@@ -768,15 +765,6 @@ fun ExerciseInstructionsScreen(
                             .height(300.dp),
                         contentScale = ContentScale.Fit
                     )
-                    
-                    if (showError) {
-                        Text(
-                            text = "Error loading exercise demonstration",
-                            color = Color.Red,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                    }
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))

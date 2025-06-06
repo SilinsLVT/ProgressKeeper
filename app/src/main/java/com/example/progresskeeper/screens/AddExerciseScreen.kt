@@ -28,7 +28,6 @@ fun AddExerciseScreen(
     onSave: (String) -> Unit
 ) {
     var exerciseName by remember { mutableStateOf("") }
-
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { 

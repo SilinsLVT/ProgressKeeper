@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -67,6 +68,12 @@ import java.util.Locale
 import androidx.compose.foundation.clickable
 import kotlinx.coroutines.delay
 import androidx.core.content.ContextCompat
+import com.example.progresskeeper.navigation.NavGraph
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 
 class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -105,205 +112,24 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ProgressKeeperTheme {
-                val navController = rememberNavController()
-                var selectedWorkout by remember { mutableStateOf<Workout?>(null) }
-                val context = LocalContext.current
-                val dataStorage = remember { DataStorage(context) }
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.safeDrawing),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
+                    var selectedWorkout by remember { mutableStateOf<Workout?>(null) }
+                    val context = LocalContext.current
+                    val dataStorage = remember { DataStorage(context) }
 
-                // kad radi, tad so atkomente vala
-
-                 //LaunchedEffect(Unit) {
-                     //delay(3000)
-                     //checkNotificationPermission()
-                // }
-                
-                Scaffold { innerPadding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.Start.route,
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        composable(Screen.Start.route) {
-                            StartScreen(
-                                onStartWorkoutClick = {
-                                    navController.navigate(Screen.WorkoutCategories.route)
-                                },
-                                onCopyWorkoutClick = {
-                                    navController.navigate(Screen.Calendar.route)
-                                },
-                                onExerciseClick = { exercise ->
-                                    navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
-                                },
-                                onAddExerciseClick = {
-                                    navController.navigate(Screen.WorkoutCategories.route)
-                                },
-                                onCalendarClick = {
-                                    navController.navigate(Screen.Calendar.route)
-                                },
-                                onHelpClick = {
-                                    navController.navigate(Screen.HelpMuscleGroups.route)
-                                }
-                            )
-                        }
-                        
-                        composable(
-                            route = Screen.Workout.route,
-                            arguments = listOf(
-                                navArgument("date") { type = NavType.LongType }
-                            )
-                        ) { backStackEntry ->
-                            val dateLong = backStackEntry.arguments?.getLong("date") ?: return@composable
-                            val date = Date(dateLong)
-                            WorkoutScreen(
-                                date = date,
-                                onExerciseClick = { exercise ->
-                                    navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
-                                },
-                                onStartWorkoutClick = {
-                                    navController.navigate(Screen.WorkoutCategories.route)
-                                },
-                                onCopyWorkoutClick = {
-                                    navController.navigate(Screen.Calendar.route)
-                                }
-                            )
-                        }
-                        
-                        composable(Screen.WorkoutCategories.route) {
-                            WorkoutCategoriesScreen(
-                                onCategorySelected = { category ->
-                                    navController.navigate(Screen.Exercises.createRoute(category))
-                                },
-                                onHomeClick = {
-                                    navController.navigate(Screen.Start.route)
-                                },
-                                onHelpClick = {
-                                    navController.navigate(Screen.HelpMuscleGroups.route)
-                                }
-                            )
-                        }
-                        
-                        composable(
-                            route = Screen.Exercises.route,
-                            arguments = listOf(
-                                navArgument("category") { type = NavType.StringType }
-                            )
-                        ) { backStackEntry ->
-                            val category = backStackEntry.arguments?.getString("category") ?: return@composable
-                            ExercisesScreen(
-                                category = category,
-                                onExerciseClick = { exercise ->
-                                    navController.navigate(Screen.ExerciseDetails.createRoute(exercise))
-                                },
-                                onHomeClick = {
-                                    navController.navigate(Screen.Start.route)
-                                },
-                                onHelpClick = { category ->
-                                    navController.navigate(Screen.HelpExercises.createRoute(category))
-                                }
-                            )
-                        }
-
-                        composable(
-                            route = Screen.ExerciseDetails.route,
-                            arguments = listOf(
-                                navArgument("exercise") { type = NavType.StringType }
-                            )
-                        ) { backStackEntry ->
-                            val exercise = backStackEntry.arguments?.getString("exercise") ?: return@composable
-                            ExerciseDetailsScreen(
-                                exercise = exercise,
-                                onSaveClick = {
-                                    navController.navigate(Screen.Workout.route)
-                                },
-                                onHomeClick = {
-                                    navController.navigate(Screen.Start.route)
-                                },
-                                onHelpClick = {
-                                    navController.navigate(Screen.ExerciseInstructions.createRoute(exercise))
-                                }
-                            )
-                        }
-                        
-                        composable(Screen.Calendar.route) {
-                            CalendarScreen(
-                                onDaySelected = { date ->
-                                    val workout = dataStorage.loadWorkout(date)
-                                    if (workout != null) {
-                                        selectedWorkout = workout
-                                    }
-                                },
-                                onHomeClick = {
-                                    navController.navigate(Screen.Start.route)
-                                },
-                                onHelpClick = {
-                                    navController.navigate(Screen.HelpMuscleGroups.route)
-                                }
-                            )
-                        }
-
-                        composable(Screen.HelpMuscleGroups.route) {
-                            HelpMuscleGroupsScreen(
-                                onMuscleGroupSelected = { category ->
-                                    navController.navigate(Screen.HelpExercises.createRoute(category))
-                                },
-                                onHomeClick = {
-                                    navController.navigate(Screen.Start.route)
-                                }
-                            )
-                        }
-                        
-                        composable(
-                            route = Screen.HelpExercises.route,
-                            arguments = listOf(
-                                navArgument("category") { type = NavType.StringType }
-                            )
-                        ) { backStackEntry ->
-                            val category = backStackEntry.arguments?.getString("category") ?: return@composable
-                            HelpExercisesScreen(
-                                category = category,
-                                onExerciseClick = { exercise ->
-                                    navController.navigate(Screen.ExerciseInstructions.createRoute(exercise))
-                                },
-                                onHomeClick = {
-                                    navController.navigate(Screen.Start.route)
-                                }
-                            )
-                        }
-                        
-                        composable(
-                            route = Screen.ExerciseInstructions.route,
-                            arguments = listOf(
-                                navArgument("exercise") { type = NavType.StringType }
-                            )
-                        ) { backStackEntry ->
-                            val exercise = backStackEntry.arguments?.getString("exercise") ?: return@composable
-                            ExerciseInstructionsScreen(
-                                exercise = exercise,
-                                onHomeClick = {
-                                    navController.navigate(Screen.Start.route)
-                                }
-                            )
-                        }
-                    }
-                }
-                if (selectedWorkout != null) {
-                    WorkoutPreviewDialog(
-                        workout = selectedWorkout!!,
-                        onCopy = {
-                            val today = Date()
-                            val copiedWorkout = Workout(today, selectedWorkout!!.exercises)
-                            dataStorage.saveWorkout(copiedWorkout)
-                            selectedWorkout = null
-                            navController.navigate(Screen.Start.route)
-                        },
-                        onDismiss = {
-                            selectedWorkout = null
-                        },
-                        onDelete = {
-                            selectedWorkout = null
-                            navController.navigate(Screen.Calendar.route)
-                        }
-                    )
+                    // Atkomente kad radi
+                    // LaunchedEffect(Unit) {
+                    //     delay(3000)
+                    //     checkNotificationPermission()
+                    // }
+                    
+                    NavGraph(navController = navController)
                 }
             }
         }
@@ -316,7 +142,8 @@ fun AppHeader(
     onCalendarClick: () -> Unit = {},
     onAddClick: () -> Unit,
     onHelpClick: () -> Unit = {},
-    onHomeClick: () -> Unit
+    onHomeClick: () -> Unit,
+    onReportClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -371,6 +198,18 @@ fun AppHeader(
                     modifier = Modifier.size(28.dp)
                 )
             }
+            
+            IconButton(
+                onClick = onReportClick,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.EmojiEvents,
+                    contentDescription = "Weekly Report",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
     }
 }
@@ -383,14 +222,14 @@ fun StartScreen(
     onExerciseClick: (String) -> Unit,
     onAddExerciseClick: () -> Unit,
     onCalendarClick: () -> Unit,
-    onHelpClick: () -> Unit
+    onHelpClick: () -> Unit,
+    onReportClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dataStorage = remember { DataStorage(context) }
     var selectedDate by remember { mutableStateOf(Date()) }
     var hasWorkout by remember { mutableStateOf(false) }
     var currentWorkout by remember { mutableStateOf<Workout?>(null) }
-
 
     LaunchedEffect(selectedDate) {
         val workout = dataStorage.loadWorkout(selectedDate)
@@ -405,7 +244,8 @@ fun StartScreen(
             onAddClick = onAddExerciseClick,
             onCalendarClick = onCalendarClick,
             onHelpClick = onHelpClick,
-            onHomeClick = onStartWorkoutClick
+            onHomeClick = onStartWorkoutClick,
+            onReportClick = onReportClick
         )
         
         val calendar = Calendar.getInstance().apply { time = selectedDate }
